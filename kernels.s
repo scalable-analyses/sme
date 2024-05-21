@@ -649,9 +649,9 @@ loop_peak_sme_bfmopa_bf16_bf16_fp32:
 
     ret
 
-    .global _example_sme_fmopa
+    .global _example_sme_fmopa_fp32_fp32_fp32
     .align 4
-_example_sme_fmopa:
+_example_sme_fmopa_fp32_fp32_fp32:
     smstart
 
     ptrue p0.b
@@ -664,22 +664,22 @@ _example_sme_fmopa:
     mov w12, #0
     mov x3, #16
 
-loop_example_sme_fmopa:
+loop_example_sme_fmopa_fp32_fp32_fp32:
     str za[w12, #0], [x2]
 
     add w12, w12, #4
     add x2, x2,   #16*4
     sub x3, x3,   #1
 
-    cbnz x3, loop_example_sme_fmopa
+    cbnz x3, loop_example_sme_fmopa_fp32_fp32_fp32
 
     smstop
 
     ret
 
-    .global _example_sme_bfmopa_widening
+    .global _example_sme_bfmopa_bf16_bf16_fp32
     .align 4
-_example_sme_bfmopa_widening:
+_example_sme_bfmopa_bf16_bf16_fp32:
     smstart
 
     ptrue p0.b
@@ -692,14 +692,14 @@ _example_sme_bfmopa_widening:
     mov w12, #0
     mov x3, #16
 
-loop_example_sme_bfmopa_widening:
+loop_example_sme_bfmopa_bf16_bf16_fp32:
     str za[w12, #0], [x2]
 
     add w12, w12, #4
     add x2, x2,   #16*4
     sub x3, x3,   #1
 
-    cbnz x3, loop_example_sme_fmopa
+    cbnz x3, loop_example_sme_bfmopa_bf16_bf16_fp32
 
     smstop
 
