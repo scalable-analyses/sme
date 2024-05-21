@@ -8,23 +8,23 @@
 #include <Accelerate/Accelerate.h>
 #include <stdio.h>
 
-extern int peak_neon_fmla( int64_t reps );
-extern int peak_sve_fmla_streaming( int64_t reps );
-extern int peak_sme_fmopa_1( int64_t reps );
-extern int peak_sme_fmopa_2( int64_t reps );
-extern int peak_sme_fmopa_4( int64_t reps );
-extern int peak_sme_fmopa_4_reorder( int64_t reps );
-extern int peak_sme_fmopa_fp64( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_8( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_16( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_32( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_64( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_128( int64_t reps );
-extern int peak_sme_fmopa_widening( int64_t reps );
-extern int peak_sme_fmopa_non_widening( int64_t reps );
-extern int peak_sme_bfmopa_widening( int64_t reps );
-extern int peak_sme_bfmopa_non_widening( int64_t reps );
-extern int peak_amx_fma( int64_t reps );
+extern int peak_neon_fmla_fp32_fp32_fp32( int64_t reps );
+extern int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_4_reorder_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_fp64_fp64_fp64( int64_t reps );
+extern int peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_fp16_fp16_fp32( int64_t reps );
+extern int peak_sme_fmopa_fp16_fp16_fp16( int64_t reps );
+extern int peak_sme_bfmopa_bf16_bf16_fp32( int64_t reps );
+extern int peak_sme_bfmopa_bf16_bf16_bf16( int64_t reps );
+extern int peak_amx_fma_fp32_fp32_fp32( int64_t reps );
 extern void triad_neon( uint64_t        i_nRepetitions,
                         uint64_t        i_nValues,
                         float    const * i_a,
@@ -305,103 +305,103 @@ void run_micro_benchmark( int i_num_threads,
   bench_micro( i_num_threads,
                i_qos_class,
                1000000000,
-               peak_neon_fmla );
+               peak_neon_fmla_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SSVE performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                100000000,
-               peak_sve_fmla_streaming );
+               peak_sve_fmla_streaming_fp32_fp32_fp32 );
 
   printf( "Determining FP32 AMX performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                100000000,
-               peak_amx_fma );
+               peak_amx_fma_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (1 tile)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_1 );
+               peak_sme_fmopa_1_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (2 tiles)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_2 );
+               peak_sme_fmopa_2_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (4 tiles)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_4 );
+               peak_sme_fmopa_4_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (4 tiles, reordering)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_4_reorder );
+               peak_sme_fmopa_4_reorder_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (8 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_smstart_smstop_8 );
+               peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (16 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_smstart_smstop_16 );
+               peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (32 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_smstart_smstop_32 );
+               peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (64 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_smstart_smstop_64 );
+               peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (128 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_smstart_smstop_128 );
+               peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME FMOPA performance (widening)...\n" );
+  printf( "Determining FP16-FP16-FP32 SME FMOPA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_widening );
+               peak_sme_fmopa_fp16_fp16_fp32 );
 
-  printf( "Determining F16 SME FMOPA performance (non-widening)...\n" );
+  // printf( "Determining FP16-FP16-FP16 SME FMOPA performance...\n" );
+  // bench_micro( i_num_threads,
+  //              i_qos_class,
+  //              250000000,
+  //              peak_sme_fmopa_fp16_fp16_fp16 );
+
+  printf( "Determining BF16-BF16-FP32 SME BFMOPA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_non_widening );
-
-  printf( "Determining FP32 SME BFMOPA performance (widening)...\n" );
-  bench_micro( i_num_threads,
-               i_qos_class,
-               250000000,
-               peak_sme_bfmopa_widening );
+               peak_sme_bfmopa_bf16_bf16_fp32 );
   
-  printf( "Determining BF16 SME BFMOPA performance (non-widening)...\n" );
-  bench_micro( i_num_threads,
-               i_qos_class,
-               250000000,
-               peak_sme_bfmopa_non_widening );
+  // printf( "Determining BF16-BF16-BF16 SME BFMOPA performance...\n" );
+  // bench_micro( i_num_threads,
+  //              i_qos_class,
+  //              250000000,
+  //              peak_sme_bfmopa_bf16_bf16_bf16 );
 
   printf( "Determining FP64 SME FMOPA performance ...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
-               peak_sme_fmopa_fp64 );
+               peak_sme_fmopa_fp64_fp64_fp64 );
 }
 
 /*

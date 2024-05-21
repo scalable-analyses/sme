@@ -47,8 +47,8 @@ _sve_streaming_vlength:
 
 
     .align 4
-    .global _peak_neon_fmla
-_peak_neon_fmla:
+    .global _peak_neon_fmla_fp32_fp32_fp32
+_peak_neon_fmla_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -94,7 +94,7 @@ _peak_neon_fmla:
     eor v30.16b, v30.16b, v30.16b
     eor v31.16b, v31.16b, v31.16b
 
-loop_peak_neon_fmla:
+loop_peak_neon_fmla_fp32_fp32_fp32:
     sub x0,x0, #1
     fmla v0.4s, v30.4s, v31.4s
     fmla v1.4s, v30.4s, v31.4s
@@ -134,7 +134,7 @@ loop_peak_neon_fmla:
     fmla v28.4s, v30.4s, v31.4s
     fmla v29.4s, v30.4s, v31.4s
 
-    cbnz x0, loop_peak_neon_fmla
+    cbnz x0, loop_peak_neon_fmla_fp32_fp32_fp32
 
     ldp d14, d15, [sp], #16
     ldp d12, d13, [sp], #16
@@ -146,9 +146,9 @@ loop_peak_neon_fmla:
     ret
 
 
-    .global _peak_sve_fmla_streaming
+    .global _peak_sve_fmla_streaming_fp32_fp32_fp32
     .align 4
-_peak_sve_fmla_streaming:
+_peak_sve_fmla_streaming_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -189,7 +189,7 @@ _peak_sve_fmla_streaming:
     eor z31.b, z31.b, z31.b
 
     ptrue p0.b
-loop_peak_sve_fmla_streaming:
+loop_peak_sve_fmla_streaming_fp32_fp32_fp32:
     sub x0, x0, #1
     fmla z0.s, p0/m, z30.s, z31.s
     fmla z1.s, p0/m, z30.s, z31.s
@@ -229,7 +229,7 @@ loop_peak_sve_fmla_streaming:
     fmla z28.s, p0/m, z30.s, z31.s
     fmla z29.s, p0/m, z30.s, z31.s
 
-    cbnz x0, loop_peak_sve_fmla_streaming
+    cbnz x0, loop_peak_sve_fmla_streaming_fp32_fp32_fp32
 
     smstop
     ldp d14, d15, [sp], #16
@@ -242,9 +242,9 @@ loop_peak_sve_fmla_streaming:
     ret
 
 
-    .global _peak_sme_fmopa_1
+    .global _peak_sme_fmopa_1_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_1:
+_peak_sme_fmopa_1_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -253,7 +253,7 @@ _peak_sme_fmopa_1:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_1:
+loop_peak_sme_fmopa_1_fp32_fp32_fp32:
     sub x0, x0, #1
 
 	fmopa za0.s, p0/m, p1/m, z0.s, z1.s
@@ -296,7 +296,7 @@ loop_peak_sme_fmopa_1:
     fmopa za0.s, p0/m, p1/m, z28.s, z29.s
     fmopa za0.s, p0/m, p1/m, z30.s, z31.s
 
-    cbnz x0, loop_peak_sme_fmopa_1
+    cbnz x0, loop_peak_sme_fmopa_1_fp32_fp32_fp32
 
     smstop
 
@@ -310,9 +310,9 @@ loop_peak_sme_fmopa_1:
     ret
 
 
-    .global _peak_sme_fmopa_2
+    .global _peak_sme_fmopa_2_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_2:
+_peak_sme_fmopa_2_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -321,7 +321,7 @@ _peak_sme_fmopa_2:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_2:
+loop_peak_sme_fmopa_2_fp32_fp32_fp32:
     sub x0, x0, #1
 
 	fmopa za0.s, p0/m, p1/m, z0.s, z1.s
@@ -364,7 +364,7 @@ loop_peak_sme_fmopa_2:
     fmopa za0.s, p0/m, p1/m, z28.s, z29.s
     fmopa za1.s, p0/m, p1/m, z30.s, z31.s
 
-    cbnz x0, loop_peak_sme_fmopa_2
+    cbnz x0, loop_peak_sme_fmopa_2_fp32_fp32_fp32
 
     smstop
 
@@ -378,9 +378,9 @@ loop_peak_sme_fmopa_2:
     ret
 
 
-    .global _peak_sme_fmopa_4
+    .global _peak_sme_fmopa_4_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_4:
+_peak_sme_fmopa_4_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -389,7 +389,7 @@ _peak_sme_fmopa_4:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_4:
+loop_peak_sme_fmopa_4_fp32_fp32_fp32:
     sub x0, x0, #1
 
     fmopa za0.s, p0/m, p1/m, z0.s, z1.s
@@ -432,7 +432,7 @@ loop_peak_sme_fmopa_4:
     fmopa za2.s, p0/m, p1/m, z28.s, z29.s
     fmopa za3.s, p0/m, p1/m, z30.s, z31.s
 
-    cbnz x0, loop_peak_sme_fmopa_4
+    cbnz x0, loop_peak_sme_fmopa_4_fp32_fp32_fp32
 
     smstop
 
@@ -446,9 +446,9 @@ loop_peak_sme_fmopa_4:
     ret
 
 
-    .global _peak_sme_fmopa_4_reorder
+    .global _peak_sme_fmopa_4_reorder_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_4_reorder:
+_peak_sme_fmopa_4_reorder_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -457,7 +457,7 @@ _peak_sme_fmopa_4_reorder:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_4_reorder:
+loop_peak_sme_fmopa_4_reorder_fp32_fp32_fp32:
     sub x0, x0, #1
 
     fmopa za0.s, p0/m, p1/m, z0.s, z1.s
@@ -500,7 +500,7 @@ loop_peak_sme_fmopa_4_reorder:
     fmopa za3.s, p0/m, p1/m, z28.s, z29.s
     fmopa za3.s, p0/m, p1/m, z30.s, z31.s
 
-    cbnz x0, loop_peak_sme_fmopa_4_reorder
+    cbnz x0, loop_peak_sme_fmopa_4_reorder_fp32_fp32_fp32
 
     smstop
 
@@ -514,9 +514,9 @@ loop_peak_sme_fmopa_4_reorder:
     ret
 
 
-    .global _peak_sme_fmopa_widening
+    .global _peak_sme_fmopa_fp16_fp16_fp32
     .align 4
-_peak_sme_fmopa_widening:
+_peak_sme_fmopa_fp16_fp16_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -525,7 +525,7 @@ _peak_sme_fmopa_widening:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_widening:
+loop_peak_sme_fmopa_fp16_fp16_fp32:
     sub x0, x0, #1
 
 	fmopa za0.s, p0/m, p1/m, z0.h, z1.h
@@ -568,7 +568,7 @@ loop_peak_sme_fmopa_widening:
     fmopa za2.s, p0/m, p1/m, z28.h, z29.h
     fmopa za3.s, p0/m, p1/m, z30.h, z31.h
 
-    cbnz x0, loop_peak_sme_fmopa_widening
+    cbnz x0, loop_peak_sme_fmopa_fp16_fp16_fp32
 
     smstop
 
@@ -582,9 +582,9 @@ loop_peak_sme_fmopa_widening:
     ret
 
 
-    .global _peak_sme_bfmopa_widening
+    .global _peak_sme_bfmopa_bf16_bf16_fp32
     .align 4
-_peak_sme_bfmopa_widening:
+_peak_sme_bfmopa_bf16_bf16_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -593,10 +593,10 @@ _peak_sme_bfmopa_widening:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_bfmopa_widening:
+loop_peak_sme_bfmopa_bf16_bf16_fp32:
     sub x0, x0, #1
 
-	  bfmopa za0.s, p0/m, p1/m, z0.h, z1.h
+	bfmopa za0.s, p0/m, p1/m, z0.h, z1.h
     bfmopa za1.s, p0/m, p1/m, z2.h, z3.h
     bfmopa za2.s, p0/m, p1/m, z4.h, z5.h
     bfmopa za3.s, p0/m, p1/m, z6.h, z7.h
@@ -636,7 +636,7 @@ loop_peak_sme_bfmopa_widening:
     bfmopa za2.s, p0/m, p1/m, z28.h, z29.h
     bfmopa za3.s, p0/m, p1/m, z30.h, z31.h
 
-    cbnz x0, loop_peak_sme_bfmopa_widening
+    cbnz x0, loop_peak_sme_bfmopa_bf16_bf16_fp32
 
     smstop
 
@@ -768,8 +768,8 @@ loop_triad_neon_val:
 
     .text
     .align 4
-    .global _peak_amx_fma
-_peak_amx_fma:
+    .global _peak_amx_fma_fp32_fp32_fp32
+_peak_amx_fma_fp32_fp32_fp32:
     // enable AMX
     .word 0x00201220
 
@@ -786,7 +786,7 @@ _peak_amx_fma:
     add x10, x10, #1
     add x14, x14, x10, lsl #20
 
-loop_peak_amx_fma:
+loop_peak_amx_fma_fp32_fp32_fp32:
     // do the 20 amx-ops
     // each doing 16*16 fma ops
     .inst 0x20118b // x11
@@ -815,7 +815,7 @@ loop_peak_amx_fma:
     .inst 0x20118e // x14
 
     sub x0, x0, #1
-    cbnz x0, loop_peak_amx_fma
+    cbnz x0, loop_peak_amx_fma_fp32_fp32_fp32
 
     // disable AMX
     .word 0x00201221
@@ -825,15 +825,15 @@ loop_peak_amx_fma:
     ret
 
 
-    .global _peak_sme_fmopa_smstart_smstop_8
+    .global _peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_smstart_smstop_8:
+_peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
     stp d14, d15, [sp, #-16]!
 
-loop_peak_sme_fmopa_smstart_smstop_8_outer:
+loop_peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32_outer:
     sub x0, x0, #1
 
     smstart
@@ -852,7 +852,7 @@ loop_peak_sme_fmopa_smstart_smstop_8_outer:
 
     smstop
 
-    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_8_outer
+    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32_outer
 
 
     ldp d14, d15, [sp], #16
@@ -865,15 +865,15 @@ loop_peak_sme_fmopa_smstart_smstop_8_outer:
     ret
 
 
-    .global _peak_sme_fmopa_smstart_smstop_16
+    .global _peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_smstart_smstop_16:
+_peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
     stp d14, d15, [sp, #-16]!
 
-loop_peak_sme_fmopa_smstart_smstop_16_outer:
+loop_peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32_outer:
     sub x0, x0, #1
 
     smstart
@@ -902,7 +902,7 @@ loop_peak_sme_fmopa_smstart_smstop_16_outer:
 
     smstop
 
-    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_16_outer
+    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32_outer
 
 
     ldp d14, d15, [sp], #16
@@ -914,15 +914,15 @@ loop_peak_sme_fmopa_smstart_smstop_16_outer:
 
     ret
 
-    .global _peak_sme_fmopa_smstart_smstop_32
+    .global _peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_smstart_smstop_32:
+_peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
     stp d14, d15, [sp, #-16]!
 
-loop_peak_sme_fmopa_smstart_smstop_32_outer:
+loop_peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32_outer:
     sub x0, x0, #1
 
     smstart
@@ -971,7 +971,7 @@ loop_peak_sme_fmopa_smstart_smstop_32_outer:
 
     smstop
 
-    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_32_outer
+    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32_outer
 
 
     ldp d14, d15, [sp], #16
@@ -984,15 +984,15 @@ loop_peak_sme_fmopa_smstart_smstop_32_outer:
     ret
 
 
-    .global _peak_sme_fmopa_smstart_smstop_64
+    .global _peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_smstart_smstop_64:
+_peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
     stp d14, d15, [sp, #-16]!
 
-loop_peak_sme_fmopa_smstart_smstop_64_outer:
+loop_peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32_outer:
     sub x0, x0, #1
 
     smstart
@@ -1000,7 +1000,7 @@ loop_peak_sme_fmopa_smstart_smstop_64_outer:
     ptrue p1.b
 
     mov x1, #2
-loop_peak_sme_fmopa_smstart_smstop_64_inner:
+loop_peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32_inner:
     sub x1, x1, #1
 
     fmopa za0.s, p0/m, p1/m, z0.s, z1.s
@@ -1043,11 +1043,11 @@ loop_peak_sme_fmopa_smstart_smstop_64_inner:
     fmopa za2.s, p0/m, p1/m, z28.s, z29.s
     fmopa za3.s, p0/m, p1/m, z30.s, z31.s
 
-    cbnz x1, loop_peak_sme_fmopa_smstart_smstop_64_inner
+    cbnz x1, loop_peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32_inner
 
     smstop
 
-    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_64_outer
+    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32_outer
 
 
     ldp d14, d15, [sp], #16
@@ -1060,15 +1060,15 @@ loop_peak_sme_fmopa_smstart_smstop_64_inner:
     ret
 
 
-    .global _peak_sme_fmopa_smstart_smstop_128
+    .global _peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32
     .align 4
-_peak_sme_fmopa_smstart_smstop_128:
+_peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
     stp d14, d15, [sp, #-16]!
 
-loop_peak_sme_fmopa_smstart_smstop_128_outer:
+loop_peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32_outer:
     sub x0, x0, #1
 
     smstart
@@ -1076,7 +1076,7 @@ loop_peak_sme_fmopa_smstart_smstop_128_outer:
     ptrue p1.b
 
     mov x1, #4
-loop_peak_sme_fmopa_smstart_smstop_128_inner:
+loop_peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32_inner:
     sub x1, x1, #1
 
     fmopa za0.s, p0/m, p1/m, z0.s, z1.s
@@ -1119,11 +1119,11 @@ loop_peak_sme_fmopa_smstart_smstop_128_inner:
     fmopa za2.s, p0/m, p1/m, z28.s, z29.s
     fmopa za3.s, p0/m, p1/m, z30.s, z31.s
 
-    cbnz x1, loop_peak_sme_fmopa_smstart_smstop_128_inner
+    cbnz x1, loop_peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32_inner
 
     smstop
 
-    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_128_outer
+    cbnz x0, loop_peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32_outer
 
 
     ldp d14, d15, [sp], #16
@@ -1136,9 +1136,9 @@ loop_peak_sme_fmopa_smstart_smstop_128_inner:
     ret
 
 
-    .global _peak_sme_fmopa_non_widening
+    .global _peak_sme_fmopa_fp16_fp16_fp16
     .align 4
-_peak_sme_fmopa_non_widening:
+_peak_sme_fmopa_fp16_fp16_fp16:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -1147,7 +1147,7 @@ _peak_sme_fmopa_non_widening:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_non_widening:
+loop_peak_sme_fmopa_fp16_fp16_fp16:
     sub x0, x0, #1
 
 	fmopa za0.h, p0/m, p1/m, z0.h, z1.h
@@ -1190,7 +1190,7 @@ loop_peak_sme_fmopa_non_widening:
     fmopa za0.h, p0/m, p1/m, z28.h, z29.h
     fmopa za1.h, p0/m, p1/m, z30.h, z31.h
 
-    cbnz x0, loop_peak_sme_fmopa_non_widening
+    cbnz x0, loop_peak_sme_fmopa_fp16_fp16_fp16
 
     smstop
 
@@ -1203,9 +1203,9 @@ loop_peak_sme_fmopa_non_widening:
 
     ret
 
-    .global _peak_sme_bfmopa_non_widening
+    .global _peak_sme_bfmopa_bf16_bf16_bf16
     .align 4
-_peak_sme_bfmopa_non_widening:
+_peak_sme_bfmopa_bf16_bf16_bf16:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -1214,7 +1214,7 @@ _peak_sme_bfmopa_non_widening:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_bfmopa_non_widening:
+loop_peak_sme_bfmopa_bf16_bf16_bf16:
     sub x0, x0, #1
 
 	bfmopa za0.h, p0/m, p1/m, z0.h, z1.h
@@ -1257,7 +1257,7 @@ loop_peak_sme_bfmopa_non_widening:
     bfmopa za0.h, p0/m, p1/m, z28.h, z29.h
     bfmopa za1.h, p0/m, p1/m, z30.h, z31.h
 
-    cbnz x0, loop_peak_sme_bfmopa_non_widening
+    cbnz x0, loop_peak_sme_bfmopa_bf16_bf16_bf16
 
     smstop
 
@@ -1270,9 +1270,9 @@ loop_peak_sme_bfmopa_non_widening:
 
     ret
 
-    .global _peak_sme_fmopa_fp64
+    .global _peak_sme_fmopa_fp64_fp64_fp64
     .align 4
-_peak_sme_fmopa_fp64:
+_peak_sme_fmopa_fp64_fp64_fp64:
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
     stp d12, d13, [sp, #-16]!
@@ -1281,7 +1281,7 @@ _peak_sme_fmopa_fp64:
     smstart
     ptrue p0.b
     ptrue p1.b
-loop_peak_sme_fmopa_fp64:
+loop_peak_sme_fmopa_fp64_fp64_fp64:
     sub x0, x0, #1
 
     fmopa za0.d, p0/m, p1/m, z0.d, z1.d
@@ -1324,7 +1324,7 @@ loop_peak_sme_fmopa_fp64:
     fmopa za6.d, p0/m, p1/m, z28.d, z29.d
     fmopa za7.d, p0/m, p1/m, z30.d, z31.d
 
-    cbnz x0, loop_peak_sme_fmopa_fp64
+    cbnz x0, loop_peak_sme_fmopa_fp64_fp64_fp64
 
     smstop
 
