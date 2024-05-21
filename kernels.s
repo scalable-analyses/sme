@@ -1134,3 +1134,205 @@ loop_peak_sme_fmopa_smstart_smstop_128_inner:
     mov x0, #128*512
 
     ret
+
+
+    .global _peak_sme_fmopa_non_widening
+    .align 4
+_peak_sme_fmopa_non_widening:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    ptrue p0.b
+    ptrue p1.b
+loop_peak_sme_fmopa_non_widening:
+    sub x0, x0, #1
+
+	fmopa za0.h, p0/m, p1/m, z0.h, z1.h
+    fmopa za1.h, p0/m, p1/m, z2.h, z3.h
+    fmopa za0.h, p0/m, p1/m, z4.h, z5.h
+    fmopa za1.h, p0/m, p1/m, z6.h, z7.h
+
+    fmopa za0.h, p0/m, p1/m, z8.h, z9.h
+    fmopa za1.h, p0/m, p1/m, z10.h, z11.h
+    fmopa za0.h, p0/m, p1/m, z12.h, z13.h
+    fmopa za1.h, p0/m, p1/m, z14.h, z15.h
+
+    fmopa za0.h, p0/m, p1/m, z16.h, z17.h
+    fmopa za1.h, p0/m, p1/m, z18.h, z19.h
+    fmopa za0.h, p0/m, p1/m, z20.h, z21.h
+    fmopa za1.h, p0/m, p1/m, z22.h, z23.h
+
+    fmopa za0.h, p0/m, p1/m, z24.h, z25.h
+    fmopa za1.h, p0/m, p1/m, z26.h, z27.h
+    fmopa za0.h, p0/m, p1/m, z28.h, z29.h
+    fmopa za1.h, p0/m, p1/m, z30.h, z31.h
+
+    fmopa za0.h, p0/m, p1/m, z0.h, z1.h
+    fmopa za1.h, p0/m, p1/m, z2.h, z3.h
+    fmopa za0.h, p0/m, p1/m, z4.h, z5.h
+    fmopa za1.h, p0/m, p1/m, z6.h, z7.h
+
+    fmopa za0.h, p0/m, p1/m, z8.h, z9.h
+    fmopa za1.h, p0/m, p1/m, z10.h, z11.h
+    fmopa za0.h, p0/m, p1/m, z12.h, z13.h
+    fmopa za1.h, p0/m, p1/m, z14.h, z15.h
+
+    fmopa za0.h, p0/m, p1/m, z16.h, z17.h
+    fmopa za1.h, p0/m, p1/m, z18.h, z19.h
+    fmopa za0.h, p0/m, p1/m, z20.h, z21.h
+    fmopa za1.h, p0/m, p1/m, z22.h, z23.h
+    
+    fmopa za0.h, p0/m, p1/m, z24.h, z25.h
+    fmopa za1.h, p0/m, p1/m, z26.h, z27.h
+    fmopa za0.h, p0/m, p1/m, z28.h, z29.h
+    fmopa za1.h, p0/m, p1/m, z30.h, z31.h
+
+    cbnz x0, loop_peak_sme_fmopa_non_widening
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*2048
+
+    ret
+
+    .global _peak_sme_bfmopa_non_widening
+    .align 4
+_peak_sme_bfmopa_non_widening:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    ptrue p0.b
+    ptrue p1.b
+loop_peak_sme_bfmopa_non_widening:
+    sub x0, x0, #1
+
+	bfmopa za0.h, p0/m, p1/m, z0.h, z1.h
+    bfmopa za1.h, p0/m, p1/m, z2.h, z3.h
+    bfmopa za0.h, p0/m, p1/m, z4.h, z5.h
+    bfmopa za1.h, p0/m, p1/m, z6.h, z7.h
+
+    bfmopa za0.h, p0/m, p1/m, z8.h, z9.h
+    bfmopa za1.h, p0/m, p1/m, z10.h, z11.h
+    bfmopa za0.h, p0/m, p1/m, z12.h, z13.h
+    bfmopa za1.h, p0/m, p1/m, z14.h, z15.h
+
+    bfmopa za0.h, p0/m, p1/m, z16.h, z17.h
+    bfmopa za1.h, p0/m, p1/m, z18.h, z19.h
+    bfmopa za0.h, p0/m, p1/m, z20.h, z21.h
+    bfmopa za1.h, p0/m, p1/m, z22.h, z23.h
+
+    bfmopa za0.h, p0/m, p1/m, z24.h, z25.h
+    bfmopa za1.h, p0/m, p1/m, z26.h, z27.h
+    bfmopa za0.h, p0/m, p1/m, z28.h, z29.h
+    bfmopa za1.h, p0/m, p1/m, z30.h, z31.h
+
+    bfmopa za0.h, p0/m, p1/m, z0.h, z1.h
+    bfmopa za1.h, p0/m, p1/m, z2.h, z3.h
+    bfmopa za0.h, p0/m, p1/m, z4.h, z5.h
+    bfmopa za1.h, p0/m, p1/m, z6.h, z7.h
+
+    bfmopa za0.h, p0/m, p1/m, z8.h, z9.h
+    bfmopa za1.h, p0/m, p1/m, z10.h, z11.h
+    bfmopa za0.h, p0/m, p1/m, z12.h, z13.h
+    bfmopa za1.h, p0/m, p1/m, z14.h, z15.h
+
+    bfmopa za0.h, p0/m, p1/m, z16.h, z17.h
+    bfmopa za1.h, p0/m, p1/m, z18.h, z19.h
+    bfmopa za0.h, p0/m, p1/m, z20.h, z21.h
+    bfmopa za1.h, p0/m, p1/m, z22.h, z23.h
+    
+    bfmopa za0.h, p0/m, p1/m, z24.h, z25.h
+    bfmopa za1.h, p0/m, p1/m, z26.h, z27.h
+    bfmopa za0.h, p0/m, p1/m, z28.h, z29.h
+    bfmopa za1.h, p0/m, p1/m, z30.h, z31.h
+
+    cbnz x0, loop_peak_sme_bfmopa_non_widening
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*2048
+
+    ret
+
+    .global _peak_sme_fmopa_fp64
+    .align 4
+_peak_sme_fmopa_fp64:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    ptrue p0.b
+    ptrue p1.b
+loop_peak_sme_fmopa_fp64:
+    sub x0, x0, #1
+
+    fmopa za0.d, p0/m, p1/m, z0.d, z1.d
+    fmopa za1.d, p0/m, p1/m, z2.d, z3.d
+    fmopa za2.d, p0/m, p1/m, z4.d, z5.d
+    fmopa za3.d, p0/m, p1/m, z6.d, z7.d
+
+    fmopa za4.d, p0/m, p1/m, z8.d, z9.d
+    fmopa za5.d, p0/m, p1/m, z10.d, z11.d
+    fmopa za6.d, p0/m, p1/m, z12.d, z13.d
+    fmopa za7.d, p0/m, p1/m, z14.d, z15.d
+
+    fmopa za0.d, p0/m, p1/m, z16.d, z17.d
+    fmopa za1.d, p0/m, p1/m, z18.d, z19.d
+    fmopa za2.d, p0/m, p1/m, z20.d, z21.d
+    fmopa za3.d, p0/m, p1/m, z22.d, z23.d
+
+    fmopa za4.d, p0/m, p1/m, z24.d, z25.d
+    fmopa za5.d, p0/m, p1/m, z26.d, z27.d
+    fmopa za6.d, p0/m, p1/m, z28.d, z29.d
+    fmopa za7.d, p0/m, p1/m, z30.d, z31.d
+
+    fmopa za0.d, p0/m, p1/m, z0.d, z1.d
+    fmopa za1.d, p0/m, p1/m, z2.d, z3.d
+    fmopa za2.d, p0/m, p1/m, z4.d, z5.d
+    fmopa za3.d, p0/m, p1/m, z6.d, z7.d
+
+    fmopa za4.d, p0/m, p1/m, z8.d, z9.d
+    fmopa za5.d, p0/m, p1/m, z10.d, z11.d
+    fmopa za6.d, p0/m, p1/m, z12.d, z13.d
+    fmopa za7.d, p0/m, p1/m, z14.d, z15.d
+
+    fmopa za0.d, p0/m, p1/m, z16.d, z17.d
+    fmopa za1.d, p0/m, p1/m, z18.d, z19.d
+    fmopa za2.d, p0/m, p1/m, z20.d, z21.d
+    fmopa za3.d, p0/m, p1/m, z22.d, z23.d
+    
+    fmopa za4.d, p0/m, p1/m, z24.d, z25.d
+    fmopa za5.d, p0/m, p1/m, z26.d, z27.d
+    fmopa za6.d, p0/m, p1/m, z28.d, z29.d
+    fmopa za7.d, p0/m, p1/m, z30.d, z31.d
+
+    cbnz x0, loop_peak_sme_fmopa_fp64
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*128
+
+    ret

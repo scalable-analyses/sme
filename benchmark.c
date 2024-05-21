@@ -14,19 +14,23 @@ extern int peak_sme_fmopa_1( int64_t reps );
 extern int peak_sme_fmopa_2( int64_t reps );
 extern int peak_sme_fmopa_4( int64_t reps );
 extern int peak_sme_fmopa_4_reorder( int64_t reps );
+extern int peak_sme_fmopa_fp64( int64_t reps );
 extern int peak_sme_fmopa_smstart_smstop_8( int64_t reps );
 extern int peak_sme_fmopa_smstart_smstop_16( int64_t reps );
 extern int peak_sme_fmopa_smstart_smstop_32( int64_t reps );
 extern int peak_sme_fmopa_smstart_smstop_64( int64_t reps );
 extern int peak_sme_fmopa_smstart_smstop_128( int64_t reps );
 extern int peak_sme_fmopa_widening( int64_t reps );
+extern int peak_sme_fmopa_non_widening( int64_t reps );
 extern int peak_sme_bfmopa_widening( int64_t reps );
+extern int peak_sme_bfmopa_non_widening( int64_t reps );
 extern int peak_amx_fma( int64_t reps );
 extern void triad_neon( uint64_t        i_nRepetitions,
                         uint64_t        i_nValues,
                         float    const * i_a,
                         float    const * i_b,
                         float          * o_c );
+                
 
 void bench_micro( int        i_num_threads,
                   int        i_qos_class,
@@ -369,17 +373,35 @@ void run_micro_benchmark( int i_num_threads,
                250000000,
                peak_sme_fmopa_smstart_smstop_128 );
 
-  printf( "Determining FP32 SME BFMOPA performance (widening)...\n" );
+  printf( "Determining FP32 SME FMOPA performance (widening)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
                peak_sme_fmopa_widening );
+
+  printf( "Determining F16 SME FMOPA performance (non-widening)...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               250000000,
+               peak_sme_fmopa_non_widening );
 
   printf( "Determining FP32 SME BFMOPA performance (widening)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                250000000,
                peak_sme_bfmopa_widening );
+  
+  printf( "Determining BF16 SME BFMOPA performance (non-widening)...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               250000000,
+               peak_sme_bfmopa_non_widening );
+
+  printf( "Determining FP64 SME FMOPA performance ...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               250000000,
+               peak_sme_fmopa_fp64 );
 }
 
 /*
