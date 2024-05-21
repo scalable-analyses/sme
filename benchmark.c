@@ -24,6 +24,8 @@ extern int peak_sme_fmopa_fp16_fp16_fp32( int64_t reps );
 extern int peak_sme_fmopa_fp16_fp16_fp16( int64_t reps );
 extern int peak_sme_bfmopa_bf16_bf16_fp32( int64_t reps );
 extern int peak_sme_bfmopa_bf16_bf16_bf16( int64_t reps );
+extern int peak_sme_smopa_i8_i8_i32( int64_t reps );
+extern int peak_sme_smopa_i16_i16_i32( int64_t reps );
 extern int peak_amx_fma_fp32_fp32_fp32( int64_t reps );
 extern void triad_neon( uint64_t        i_nRepetitions,
                         uint64_t        i_nValues,
@@ -62,7 +64,7 @@ void bench_micro( int        i_num_threads,
   dispatch_group_t l_group = dispatch_group_create();
 
   // benchmarking vars
-  double l_gflops = 0;
+  double l_gops = 0;
   struct timeval l_start;
   struct timeval l_end;
   long l_seconds = 0;
@@ -83,16 +85,16 @@ void bench_micro( int        i_num_threads,
   l_useconds = l_end.tv_usec - l_start.tv_usec;
   l_total_time = l_seconds + l_useconds/1000000.0;
 
-  // determine GFLOPS
-  l_gflops = i_kernel( 1 );
-  l_gflops *= i_num_threads;
-  l_gflops *= i_num_reps;
-  l_gflops *= 1.0E-9;
-  l_gflops /= l_total_time;
+  // determine GOPS
+  l_gops = i_kernel( 1 );
+  l_gops *= i_num_threads;
+  l_gops *= i_num_reps;
+  l_gops *= 1.0E-9;
+  l_gops /= l_total_time;
 
   printf( "  Repetitions:  %" PRId64 "\n", i_num_reps );
   printf( "  Total time:  %f\n", l_total_time );
-  printf( "  GFLOPS: %f\n", l_gflops );
+  printf( "  GOPS: %f\n", l_gops );
 }
 
 void bench_triad( int64_t i_num_values,
@@ -379,29 +381,29 @@ void run_micro_benchmark( int i_num_threads,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_fp16_fp16_fp32 );
 
-  // printf( "Determining FP16-FP16-FP16 SME FMOPA performance...\n" );
-  // bench_micro( i_num_threads,
-  //              i_qos_class,
-  //              (i_qos_class < 4) ? 250000000 : 50000000,
-  //              peak_sme_fmopa_fp16_fp16_fp16 );
-
   printf( "Determining BF16-BF16-FP32 SME BFMOPA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_bfmopa_bf16_bf16_fp32 );
-  
-  // printf( "Determining BF16-BF16-BF16 SME BFMOPA performance...\n" );
-  // bench_micro( i_num_threads,
-  //              i_qos_class,
-  //              (i_qos_class < 4) ? 250000000 : 50000000,
-  //              peak_sme_bfmopa_bf16_bf16_bf16 );
 
   printf( "Determining FP64 SME FMOPA performance ...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_fp64_fp64_fp64 );
+
+  printf( "Determining I8-I8-I32 SME FMOPA performance...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 250000000 : 50000000,
+               peak_sme_smopa_i8_i8_i32 );
+
+  printf( "Determining I16-I16-I32 SME FMOPA performance...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 250000000 : 50000000,
+               peak_sme_smopa_i16_i16_i32 );
 }
 
 /*

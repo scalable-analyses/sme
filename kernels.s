@@ -256,7 +256,7 @@ _peak_sme_fmopa_1_fp32_fp32_fp32:
 loop_peak_sme_fmopa_1_fp32_fp32_fp32:
     sub x0, x0, #1
 
-	fmopa za0.s, p0/m, p1/m, z0.s, z1.s
+    fmopa za0.s, p0/m, p1/m, z0.s, z1.s
     fmopa za0.s, p0/m, p1/m, z2.s, z3.s
     fmopa za0.s, p0/m, p1/m, z4.s, z5.s
     fmopa za0.s, p0/m, p1/m, z6.s, z7.s
@@ -324,7 +324,7 @@ _peak_sme_fmopa_2_fp32_fp32_fp32:
 loop_peak_sme_fmopa_2_fp32_fp32_fp32:
     sub x0, x0, #1
 
-	fmopa za0.s, p0/m, p1/m, z0.s, z1.s
+    fmopa za0.s, p0/m, p1/m, z0.s, z1.s
     fmopa za1.s, p0/m, p1/m, z2.s, z3.s
     fmopa za0.s, p0/m, p1/m, z4.s, z5.s
     fmopa za1.s, p0/m, p1/m, z6.s, z7.s
@@ -528,7 +528,7 @@ _peak_sme_fmopa_fp16_fp16_fp32:
 loop_peak_sme_fmopa_fp16_fp16_fp32:
     sub x0, x0, #1
 
-	fmopa za0.s, p0/m, p1/m, z0.h, z1.h
+    fmopa za0.s, p0/m, p1/m, z0.h, z1.h
     fmopa za1.s, p0/m, p1/m, z2.h, z3.h
     fmopa za2.s, p0/m, p1/m, z4.h, z5.h
     fmopa za3.s, p0/m, p1/m, z6.h, z7.h
@@ -596,7 +596,7 @@ _peak_sme_bfmopa_bf16_bf16_fp32:
 loop_peak_sme_bfmopa_bf16_bf16_fp32:
     sub x0, x0, #1
 
-	bfmopa za0.s, p0/m, p1/m, z0.h, z1.h
+    bfmopa za0.s, p0/m, p1/m, z0.h, z1.h
     bfmopa za1.s, p0/m, p1/m, z2.h, z3.h
     bfmopa za2.s, p0/m, p1/m, z4.h, z5.h
     bfmopa za3.s, p0/m, p1/m, z6.h, z7.h
@@ -1150,7 +1150,7 @@ _peak_sme_fmopa_fp16_fp16_fp16:
 loop_peak_sme_fmopa_fp16_fp16_fp16:
     sub x0, x0, #1
 
-	fmopa za0.h, p0/m, p1/m, z0.h, z1.h
+    fmopa za0.h, p0/m, p1/m, z0.h, z1.h
     fmopa za1.h, p0/m, p1/m, z2.h, z3.h
     fmopa za0.h, p0/m, p1/m, z4.h, z5.h
     fmopa za1.h, p0/m, p1/m, z6.h, z7.h
@@ -1217,7 +1217,7 @@ _peak_sme_bfmopa_bf16_bf16_bf16:
 loop_peak_sme_bfmopa_bf16_bf16_bf16:
     sub x0, x0, #1
 
-	bfmopa za0.h, p0/m, p1/m, z0.h, z1.h
+    bfmopa za0.h, p0/m, p1/m, z0.h, z1.h
     bfmopa za1.h, p0/m, p1/m, z2.h, z3.h
     bfmopa za0.h, p0/m, p1/m, z4.h, z5.h
     bfmopa za1.h, p0/m, p1/m, z6.h, z7.h
@@ -1334,5 +1334,141 @@ loop_peak_sme_fmopa_fp64_fp64_fp64:
     ldp  d8,  d9, [sp], #16
 
     mov x0, 32*128
+
+    ret
+
+
+    .global _peak_sme_smopa_i8_i8_i32
+    .align 4
+_peak_sme_smopa_i8_i8_i32:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    ptrue p0.b
+    ptrue p1.b
+loop_peak_sme_smopa_i8_i8_i32:
+    sub x0, x0, #1
+
+    smopa za0.s, p0/m, p1/m, z0.b, z1.b
+    smopa za1.s, p0/m, p1/m, z2.b, z3.b
+    smopa za2.s, p0/m, p1/m, z4.b, z5.b
+    smopa za3.s, p0/m, p1/m, z6.b, z7.b
+
+    smopa za0.s, p0/m, p1/m, z8.b, z9.b
+    smopa za1.s, p0/m, p1/m, z10.b, z11.b
+    smopa za2.s, p0/m, p1/m, z12.b, z13.b
+    smopa za3.s, p0/m, p1/m, z14.b, z15.b
+
+    smopa za0.s, p0/m, p1/m, z16.b, z17.b
+    smopa za1.s, p0/m, p1/m, z18.b, z19.b
+    smopa za2.s, p0/m, p1/m, z20.b, z21.b
+    smopa za3.s, p0/m, p1/m, z22.b, z23.b
+
+    smopa za0.s, p0/m, p1/m, z24.b, z25.b
+    smopa za1.s, p0/m, p1/m, z26.b, z27.b
+    smopa za2.s, p0/m, p1/m, z28.b, z29.b
+    smopa za3.s, p0/m, p1/m, z30.b, z31.b
+
+    smopa za0.s, p0/m, p1/m, z0.b, z1.b
+    smopa za1.s, p0/m, p1/m, z2.b, z3.b
+    smopa za2.s, p0/m, p1/m, z4.b, z5.b
+    smopa za3.s, p0/m, p1/m, z6.b, z7.b
+
+    smopa za0.s, p0/m, p1/m, z8.b, z9.b
+    smopa za1.s, p0/m, p1/m, z10.b, z11.b
+    smopa za2.s, p0/m, p1/m, z12.b, z13.b
+    smopa za3.s, p0/m, p1/m, z14.b, z15.b
+
+    smopa za0.s, p0/m, p1/m, z16.b, z17.b
+    smopa za1.s, p0/m, p1/m, z18.b, z19.b
+    smopa za2.s, p0/m, p1/m, z20.b, z21.b
+    smopa za3.s, p0/m, p1/m, z22.b, z23.b
+
+    smopa za0.s, p0/m, p1/m, z24.b, z25.b
+    smopa za1.s, p0/m, p1/m, z26.b, z27.b
+    smopa za2.s, p0/m, p1/m, z28.b, z29.b
+    smopa za3.s, p0/m, p1/m, z30.b, z31.b
+
+    cbnz x0, loop_peak_sme_smopa_i8_i8_i32
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*2048
+
+    ret
+
+
+    .global _peak_sme_smopa_i16_i16_i32
+    .align 4
+_peak_sme_smopa_i16_i16_i32:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    ptrue p0.b
+    ptrue p1.b
+loop_peak_sme_smopa_i16_i16_i32:
+    sub x0, x0, #1
+
+    smopa za0.s, p0/m, p1/m, z0.h, z1.h
+    smopa za1.s, p0/m, p1/m, z2.h, z3.h
+    smopa za2.s, p0/m, p1/m, z4.h, z5.h
+    smopa za3.s, p0/m, p1/m, z6.h, z7.h
+
+    smopa za0.s, p0/m, p1/m, z8.h, z9.h
+    smopa za1.s, p0/m, p1/m, z10.h, z11.h
+    smopa za2.s, p0/m, p1/m, z12.h, z13.h
+    smopa za3.s, p0/m, p1/m, z14.h, z15.h
+
+    smopa za0.s, p0/m, p1/m, z16.h, z17.h
+    smopa za1.s, p0/m, p1/m, z18.h, z19.h
+    smopa za2.s, p0/m, p1/m, z20.h, z21.h
+    smopa za3.s, p0/m, p1/m, z22.h, z23.h
+
+    smopa za0.s, p0/m, p1/m, z24.h, z25.h
+    smopa za1.s, p0/m, p1/m, z26.h, z27.h
+    smopa za2.s, p0/m, p1/m, z28.h, z29.h
+    smopa za3.s, p0/m, p1/m, z30.h, z31.h
+
+    smopa za0.s, p0/m, p1/m, z0.h, z1.h
+    smopa za1.s, p0/m, p1/m, z2.h, z3.h
+    smopa za2.s, p0/m, p1/m, z4.h, z5.h
+    smopa za3.s, p0/m, p1/m, z6.h, z7.h
+
+    smopa za0.s, p0/m, p1/m, z8.h, z9.h
+    smopa za1.s, p0/m, p1/m, z10.h, z11.h
+    smopa za2.s, p0/m, p1/m, z12.h, z13.h
+    smopa za3.s, p0/m, p1/m, z14.h, z15.h
+
+    smopa za0.s, p0/m, p1/m, z16.h, z17.h
+    smopa za1.s, p0/m, p1/m, z18.h, z19.h
+    smopa za2.s, p0/m, p1/m, z20.h, z21.h
+    smopa za3.s, p0/m, p1/m, z22.h, z23.h
+
+    smopa za0.s, p0/m, p1/m, z24.h, z25.h
+    smopa za1.s, p0/m, p1/m, z26.h, z27.h
+    smopa za2.s, p0/m, p1/m, z28.h, z29.h
+    smopa za3.s, p0/m, p1/m, z30.h, z31.h
+
+    cbnz x0, loop_peak_sme_smopa_i16_i16_i32
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*1024
 
     ret
