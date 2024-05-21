@@ -304,103 +304,103 @@ void run_micro_benchmark( int i_num_threads,
   printf( "Determining FP32 Neon performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               1000000000,
+               (i_qos_class < 4) ? 1000000000 : 200000000,
                peak_neon_fmla_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SSVE performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               100000000,
+               (i_qos_class < 4) ? 100000000 : 20000000,
                peak_sve_fmla_streaming_fp32_fp32_fp32 );
 
   printf( "Determining FP32 AMX performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               100000000,
+               (i_qos_class < 4) ? 100000000 : 20000000,
                peak_amx_fma_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (1 tile)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_1_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (2 tiles)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_2_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (4 tiles)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME FMOPA performance (4 tiles, reordering)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_reorder_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (8 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (16 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (32 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (64 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32 );
 
   printf( "Determining FP32 SME SMSTART-SMSTOP performance (128 instructions per block)...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32 );
 
   printf( "Determining FP16-FP16-FP32 SME FMOPA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_fp16_fp16_fp32 );
 
   // printf( "Determining FP16-FP16-FP16 SME FMOPA performance...\n" );
   // bench_micro( i_num_threads,
   //              i_qos_class,
-  //              250000000,
+  //              (i_qos_class < 4) ? 250000000 : 50000000,
   //              peak_sme_fmopa_fp16_fp16_fp16 );
 
   printf( "Determining BF16-BF16-FP32 SME BFMOPA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_bfmopa_bf16_bf16_fp32 );
   
   // printf( "Determining BF16-BF16-BF16 SME BFMOPA performance...\n" );
   // bench_micro( i_num_threads,
   //              i_qos_class,
-  //              250000000,
+  //              (i_qos_class < 4) ? 250000000 : 50000000,
   //              peak_sme_bfmopa_bf16_bf16_bf16 );
 
   printf( "Determining FP64 SME FMOPA performance ...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
-               250000000,
+               (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_fp64_fp64_fp64 );
 }
 
