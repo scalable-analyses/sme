@@ -6,6 +6,7 @@ struct ContentView: View {
   @State private var num_threads = 1
   @State private var qos = 1
   @State private var check = 0
+  @State private var showcase = 0
 
   var body: some View {
     VStack() {
@@ -23,9 +24,11 @@ struct ContentView: View {
           Text("CBLAS").tag(1)
           Text("Bandwidth").tag(2)
           Text("Check").tag(3)
+          Text("GEMM").tag(4)
+          Text("Showcase").tag(5)
         }
 
-        if( bench_type == 0 ) {
+        if( bench_type == 0 || bench_type == 4 ) {
           Picker("Number of Threads", selection: $num_threads) {
             ForEach(1..<7) {
               Text("\($0)").tag($0)
@@ -46,6 +49,14 @@ struct ContentView: View {
             Text("Streaming SVE").tag(1)
             Text("SME").tag(2)
             Text("SVE Streaming Vector Length").tag(3)
+            Text("Neon BF16").tag(4)
+          }
+        }
+        if( bench_type == 5 ) {
+          Picker( "Showcase", selection: $showcase ) {
+            Text("FP32 FMOPA").tag(0)
+            Text("BF16-BF16-FP32 BFMOPA").tag(1)
+            Text("FP32 ZIP 4").tag(2)
           }
         }
       }
@@ -77,8 +88,26 @@ struct ContentView: View {
             else if( check == 3 ) {
               check_sve_streaming_length()
             }
+            else if( check == 4 ) {
+              check_neon_bf16_support()
+            }
           }
-              
+          else if( bench_type == 4 ) {
+            run_gemm( Int32(num_threads),
+                      Int32(qos) )
+          }
+          else if( bench_type == 5 ) {
+            if( showcase == 0 ) {
+              showcase_fmopa_fp32_fp32_fp32()
+            }
+            else if( showcase == 1 ) {
+              showcase_bfmopa_bf16_bf16_fp32()
+            }
+            else if( showcase == 2 ) {
+              showcase_zip4_fp32()
+            }
+          }
+
           DispatchQueue.main.async {
             is_loading = false  // Hide loading indicator
           }

@@ -2,11 +2,18 @@
 #include <unistd.h>
 #include "check_support.h"
 
+extern void neon_bf16_support();
 extern void sve_support();
 extern void sve_streaming_support();
 extern void sme_support();
 extern void sve_streaming_vlength( float * i_a,
                                    float * i_b );
+
+void check_neon_bf16_support(){
+  printf( "Checking for NEON BF16 support...\n" );
+  neon_bf16_support();
+  printf( "  NEON BF16 is supported\n" );
+}
 
 void check_sve_support(){
   printf( "Checking for SVE support...\n" );

@@ -10,8 +10,12 @@ extern void example_sme_fmopa_fp32_fp32_fp32( float * i_a,
                                               float * i_b,
                                               float * i_c );
 extern void example_sme_bfmopa_bf16_bf16_fp32( bfloat16_t * i_a,
-                                         bfloat16_t * i_b,
-                                         float      * i_c );
+                                               bfloat16_t * i_b,
+                                               float      * i_c );
+extern void example_zip4_fp32( float * i_a,
+                               float * o_b );
+extern void example_trans16x16_fp32( float * i_a,
+                                     float * o_b );
 
 void showcase_fmopa_fp32_fp32_fp32() {
     printf( "Running example FP32 SME FMOPA...\n" );
@@ -55,6 +59,34 @@ void showcase_bfmopa_bf16_bf16_fp32() {
     for( int64_t l_i = 0; l_i < 16; l_i++ ){
       for( int64_t l_j = 0; l_j < 16; l_j++ ){
         printf( "  %f", l_c_fp32[l_i*16+l_j] );
+      }
+      printf( "\n" );
+    }
+}
+
+void showcase_zip4_fp32() {
+    printf( "Running FP32 example ZIP 4...\n" );
+    float l_a[4*16];
+    float l_b[4*16] = {0};
+
+    for( int64_t l_en = 0; l_en < 4*16; l_en++ ) {
+      l_a[l_en] = l_en + 1;
+    }
+
+    printf(  "  input:\n");
+    for( int64_t l_i = 0; l_i < 4; l_i++ ){
+      for( int64_t l_j = 0; l_j < 16; l_j++ ){
+        printf( "  %f", l_a[l_i*16+l_j] );
+      }
+      printf( "\n" );
+    }
+
+    example_zip4_fp32( l_a, l_b );
+
+    printf(  "  output:\n");
+    for( int64_t l_i = 0; l_i < 4; l_i++ ){
+      for( int64_t l_j = 0; l_j < 16; l_j++ ){
+        printf( "  %f", l_b[l_i*16+l_j] );
       }
       printf( "\n" );
     }

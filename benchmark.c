@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 extern int peak_neon_fmla_fp32_fp32_fp32( int64_t reps );
+extern int peak_neon_bfmmla_bf16_bf16_fp32( int64_t reps );
 extern int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t reps );
 extern int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t reps );
 extern int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t reps );
@@ -303,13 +304,19 @@ void run_micro_benchmark( int i_num_threads,
     printf( "  QoS: Default\n" );
   }
 
-  printf( "Determining FP32 Neon performance...\n" );
+  printf( "Determining FP32 Neon FMLA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 1000000000 : 200000000,
                peak_neon_fmla_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SSVE performance...\n" );
+  printf( "Determining BF16-BF16-FP32 BFMMLA Neon performance...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 1000000000 : 200000000,
+               peak_neon_bfmmla_bf16_bf16_fp32 );
+
+  printf( "Determining FP32 SSVE FMLA performance...\n" );
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 100000000 : 20000000,
