@@ -95,6 +95,7 @@ struct ContentView: View {
           else if( bench_type == 4 ) {
             run_gemm( Int32(num_threads),
                       Int32(qos) )
+            run_gemm2()
           }
           else if( bench_type == 5 ) {
             if( showcase == 0 ) {

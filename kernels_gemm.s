@@ -108,3 +108,412 @@ loop_write_gemm_micro_64_16_2:
     ldp x19, x20, [sp], #16
 
     ret
+
+
+    .align 4
+    .global _gemm_micro_32_32_32
+_gemm_micro_32_32_32:
+
+    smstart
+    // save adress of c
+    mov x9, x2
+
+    zero {za}
+
+    // k loop register
+    mov x6, #32 
+
+    // x2 adress of tile 0
+    // x3 adress of tile 1
+    add x3, x2, #64
+
+    // x4 adress of tile 2
+    add x4, x2, #2048
+
+    // x5 adress of tile 3
+    add x5, x2, #2112
+
+    // load C
+    mov w12, #0
+    mov w13, #1
+    mov w14, #2
+    mov w15, #3
+
+    ptrue p0.b
+    ptrue p1.b
+    ptrue pn8.b
+
+    ld1w { z0.s, z8.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z1.s, z9.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z2.s, z10.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z3.s, z11.s }, pn8/z, [x2]
+    add x2, x2, #128
+
+    ld1w { z4.s, z12.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z5.s, z13.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z6.s, z14.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z7.s, z15.s }, pn8/z, [x2]
+    add x2, x2, #128
+
+    ld1w { z16.s, z24.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z17.s, z25.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z18.s, z26.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z19.s, z27.s }, pn8/z, [x2]
+    add x2, x2, #128
+
+    ld1w { z20.s, z28.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z21.s, z29.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z22.s, z30.s }, pn8/z, [x2]
+    add x2, x2, #128
+    ld1w { z23.s, z31.s }, pn8/z, [x2]
+
+    mov	za0h.s[w12, 0:3], { z0.s - z3.s }  
+    add w12, w12, #4  
+    mov	za0h.s[w12, 0:3], { z4.s - z7.s }
+    add w12, w12, #4
+    mov	za0h.s[w12, 0:3], { z16.s - z19.s }
+    add w12, w12, #4
+    mov	za0h.s[w12, 0:3], { z20.s - z23.s }
+
+    mov za1h.s[w13, 0:3], { z8.s - z11.s }  
+    add w13, w13, #4  
+    mov za1h.s[w13, 0:3], { z12.s - z15.s }
+    add w13, w13, #4
+    mov za1h.s[w13, 0:3], { z24.s - z27.s }
+    add w13, w13, #4
+    mov za1h.s[w13, 0:3], { z28.s - z31.s }
+
+
+    ld1w { z0.s, z8.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z1.s, z9.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z2.s, z10.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z3.s, z11.s }, pn8/z, [x4]
+    add x4, x4, #128
+
+    ld1w { z4.s, z12.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z5.s, z13.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z6.s, z14.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z7.s, z15.s }, pn8/z, [x4]
+    add x4, x4, #128
+
+    ld1w { z16.s, z24.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z17.s, z25.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z18.s, z26.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z19.s, z27.s }, pn8/z, [x4]
+    add x4, x4, #128
+
+    ld1w { z20.s, z28.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z21.s, z29.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z22.s, z30.s }, pn8/z, [x4]
+    add x4, x4, #128
+    ld1w { z23.s, z31.s }, pn8/z, [x4]
+
+    mov	za2h.s[w14, 0:3], { z0.s - z3.s }  
+    add w14, w14, #4
+    mov	za2h.s[w14, 0:3], { z4.s - z7.s }
+    add w14, w14, #4
+    mov	za2h.s[w14, 0:3], { z16.s - z19.s }
+    add w14, w14, #4
+    mov	za2h.s[w14, 0:3], { z20.s - z23.s }
+
+    mov za3h.s[w15, 0:3], { z8.s - z11.s }  
+    add w15, w15, #4  
+    mov za3h.s[w15, 0:3], { z12.s - z15.s }
+    add w15, w15, #4
+    mov za3h.s[w15, 0:3], { z24.s - z27.s }
+    add w15, w15, #4
+    mov za3h.s[w15, 0:3], { z28.s - z31.s }
+
+  
+loop_32_32_k:
+
+    sub x6, x6, #1
+
+    // load a
+    ldr z0, [x0]
+    add x0, x0, #64
+    ldr z1, [x0]
+    add x0, x0, #64
+
+    // load b
+    ldr z2, [x1]
+    add x1, x1, #64
+    ldr z3, [x1]
+    add x1, x1, #64
+
+    //      c                 b     a
+    fmopa za0.s, p0/m, p1/m, z2.s, z0.s
+    fmopa za1.s, p0/m, p1/m, z2.s, z1.s
+    fmopa za2.s, p0/m, p1/m, z3.s, z0.s
+    fmopa za3.s, p0/m, p1/m, z3.s, z1.s
+
+
+    cbnz x6, loop_32_32_k
+
+    mov x2, x9
+    add x3, x9, #64
+    add x4, x9, #2048
+    add x5, x9, #2112
+
+    // store C
+    mov w12, #0
+    mov w13, #1
+    mov w14, #2
+    mov w15, #3
+
+
+    mov	{ z0.s - z3.s }, za0h.s[w12, 0:3]
+    add w12, w12, #4  
+    mov	{ z4.s - z7.s }, za0h.s[w12, 0:3]
+    add w12, w12, #4
+    mov	{ z16.s - z19.s }, za0h.s[w12, 0:3]
+    add w12, w12, #4
+    mov	{ z20.s - z23.s }, za0h.s[w12, 0:3]
+
+    mov { z8.s - z11.s }, za1h.s[w13, 0:3]
+    add w13, w13, #4  
+    mov { z12.s - z15.s }, za1h.s[w13, 0:3]
+    add w13, w13, #4
+    mov { z24.s - z27.s }, za1h.s[w13, 0:3]
+    add w13, w13, #4
+    mov { z28.s - z31.s }, za1h.s[w13, 0:3]
+
+    st1w { z0.s, z8.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z1.s, z9.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z2.s, z10.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z3.s, z11.s }, pn8, [x2]
+    add x2, x2, #128
+
+    st1w { z4.s, z12.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z5.s, z13.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z6.s, z14.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z7.s, z15.s }, pn8, [x2]
+    add x2, x2, #128
+
+    st1w { z16.s, z24.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z17.s, z25.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z18.s, z26.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z19.s, z27.s }, pn8, [x2]
+    add x2, x2, #128
+
+    st1w { z20.s, z28.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z21.s, z29.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z22.s, z30.s }, pn8, [x2]
+    add x2, x2, #128
+    st1w { z23.s, z31.s }, pn8, [x2]
+
+    mov	{ z0.s - z3.s }, za2h.s[w14, 0:3]
+    add w14, w14, #4  
+    mov	{ z4.s - z7.s }, za2h.s[w14, 0:3]
+    add w14, w14, #4
+    mov	{ z16.s - z19.s }, za2h.s[w14, 0:3]
+    add w14, w14, #4
+    mov	{ z20.s - z23.s }, za2h.s[w14, 0:3]
+
+    mov { z8.s - z11.s }, za3h.s[w15, 0:3]
+    add w15, w15, #4  
+    mov { z12.s - z15.s }, za3h.s[w15, 0:3]
+    add w15, w15, #4
+    mov { z24.s - z27.s }, za3h.s[w15, 0:3]
+    add w15, w15, #4
+    mov { z28.s - z31.s }, za3h.s[w15, 0:3]
+
+    st1w { z0.s, z8.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z1.s, z9.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z2.s, z10.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z3.s, z11.s }, pn8, [x4]
+    add x4, x4, #128
+
+    st1w { z4.s, z12.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z5.s, z13.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z6.s, z14.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z7.s, z15.s }, pn8, [x4]
+    add x4, x4, #128
+
+    st1w { z16.s, z24.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z17.s, z25.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z18.s, z26.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z19.s, z27.s }, pn8, [x4]
+    add x4, x4, #128
+
+    st1w { z20.s, z28.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z21.s, z29.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z22.s, z30.s }, pn8, [x4]
+    add x4, x4, #128
+    st1w { z23.s, z31.s }, pn8, [x4]
+
+    smstop
+    ret 
+
+
+    .align 4
+    .global _gemm_micro_31_32_32
+_gemm_micro_31_32_32:
+
+    smstart za
+    // save adress of c
+    mov x9, x2
+
+    // loop register
+    mov x6, #32
+
+    // x2 adress of tile 0
+    // x3 adress of tile 1
+    add x3, x2, #64
+
+    // x4 adress of tile 2
+    add x4, x2, #1984
+
+    // x5 adress of tile 3
+    add x5, x2, #2048
+
+    // load loop register
+    mov x7, #16
+
+    // load C
+    mov w12, #0
+    mov w13, #1
+    mov w14, #2
+    mov w15, #3
+
+load_loop_31_32:
+
+    sub x7, x7, #1
+
+    ldr za[w12, #0], [x2]
+    ldr za[w13, #0], [x3]
+    ldr za[w14, #0], [x4]
+    ldr za[w15, #0], [x5]
+
+    add w12, w12, #4
+    add w13, w13, #4
+    add w14, w14, #4
+    add w15, w15, #4
+
+    add x2, x2, #124
+    add x3, x3, #124
+    add x4, x4, #124
+    add x5, x5, #124
+
+    cbnz x7, load_loop_31_32
+
+
+    smstart sm
+    ptrue p0.b
+
+    mov x10, #1
+    mov x11, #16
+    whilelt p1.s, x10, x11
+  
+loop_31_32_k:
+
+    sub x6, x6, #1
+
+    // load a
+    ldr z0, [x0]
+    add x0, x0, #64
+    ldr z1, [x0]
+    add x0, x0, #60
+
+    // load b
+    ldr z2, [x1]
+    add x1, x1, #64
+    ldr z3, [x1]
+    add x1, x1, #64
+
+    //      c                 b     a
+    fmopa za0.s, p0/m, p0/m, z2.s, z0.s
+    fmopa za1.s, p0/m, p1/m, z2.s, z1.s
+    fmopa za2.s, p0/m, p0/m, z3.s, z0.s
+    fmopa za3.s, p0/m, p1/m, z3.s, z1.s
+
+    cbnz x6, loop_31_32_k
+
+    smstop sm
+
+    // store loop register
+    mov x7, #16
+
+    mov x2, x9
+    add x3, x9, #64
+    add x4, x9, #1984
+    add x5, x9, #2048
+
+    // store C
+    mov w12, #0
+    mov w13, #1
+    mov w14, #2
+    mov w15, #3
+
+store_loop_31_32:
+
+    sub x7, x7, #1
+
+    str za[w12, #0], [x2]
+    str za[w13, #0], [x3]
+    str za[w14, #0], [x4]
+    str za[w15, #0], [x5]
+
+    add w12, w12, #4
+    add w13, w13, #4
+    add w14, w14, #4
+    add w15, w15, #4
+
+    add x2, x2, #124
+    add x3, x3, #124
+    add x4, x4, #124
+    add x5, x5, #124
+
+    cbnz x7, store_loop_31_32
+
+    // store start of third tile again
+    add x4, x9, #1984
+    mov w13, #2
+    str za[w13, #0], [x4]
+
+    smstop 
+    ret
