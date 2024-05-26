@@ -113,6 +113,11 @@ loop_write_gemm_micro_64_16_2:
     .align 4
     .global _gemm_micro_32_32_32
 _gemm_micro_32_32_32:
+    // PCS: store
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
 
     smstart
     // save adress of c
@@ -387,6 +392,13 @@ loop_32_32_k:
     st1w { z23.s, z31.s }, pn8, [x4]
 
     smstop
+
+    // PCS: restore
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
     ret 
 
 
@@ -515,5 +527,6 @@ store_loop_31_32:
     mov w13, #2
     str za[w13, #0], [x4]
 
-    smstop 
+    smstop
+
     ret
