@@ -260,12 +260,11 @@ void run_gemm( int i_num_threads,
               32,
               gemm_micro_32_32_32 );
 
-  // TODO: mask writes and loads
-  // bench_gemm( i_num_threads,
-  //             i_qos_type,
-  //             10000000,
-  //             31,
-  //             32,
-  //             32,
-  //             gemm_micro_31_32_32 );
+  bench_gemm( i_num_threads,
+              i_qos_type,
+              10000000,
+              31,
+              32,
+              32,
+              gemm_micro_31_32_32 );
 }

@@ -123,8 +123,6 @@ _gemm_micro_32_32_32:
     // save adress of c
     mov x9, x2
 
-    zero {za}
-
     // k loop register
     mov x6, #32 
 
@@ -406,7 +404,13 @@ loop_32_32_k:
     .global _gemm_micro_31_32_32
 _gemm_micro_31_32_32:
 
-    smstart za
+    // PCS: store
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
     // save adress of c
     mov x9, x2
 
@@ -423,8 +427,12 @@ _gemm_micro_31_32_32:
     // x5 adress of tile 3
     add x5, x2, #2048
 
-    // load loop register
-    mov x7, #16
+    ptrue p0.b
+
+    mov x10, #1
+    mov x11, #16
+    whilelt p1.s, x10, x11
+
 
     // load C
     mov w12, #0
@@ -432,34 +440,172 @@ _gemm_micro_31_32_32:
     mov w14, #2
     mov w15, #3
 
-load_loop_31_32:
+    ld1w { z0.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z8.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z1.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z9.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z2.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z10.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z3.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z11.s }, p1/z, [x2]
+    add x2, x2, #60
 
-    sub x7, x7, #1
+    ld1w { z4.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z12.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z5.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z13.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z6.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z14.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z7.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z15.s }, p1/z, [x2]
+    add x2, x2, #60
 
-    ldr za[w12, #0], [x2]
-    ldr za[w13, #0], [x3]
-    ldr za[w14, #0], [x4]
-    ldr za[w15, #0], [x5]
+    ld1w { z16.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z24.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z17.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z25.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z18.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z26.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z19.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z27.s }, p1/z, [x2]
+    add x2, x2, #60
 
+    ld1w { z20.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z28.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z21.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z29.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z22.s  }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z30.s }, p1/z, [x2]
+    add x2, x2, #60
+    ld1w { z23.s }, p0/z, [x2]
+    add x2, x2, #64
+    ld1w { z31.s }, p1/z, [x2]
+
+    mov	za0h.s[w12, 0:3], { z0.s - z3.s }  
+    add w12, w12, #4  
+    mov	za0h.s[w12, 0:3], { z4.s - z7.s }
     add w12, w12, #4
+    mov	za0h.s[w12, 0:3], { z16.s - z19.s }
+    add w12, w12, #4
+    mov	za0h.s[w12, 0:3], { z20.s - z23.s }
+
+    mov za1h.s[w13, 0:3], { z8.s - z11.s }  
+    add w13, w13, #4  
+    mov za1h.s[w13, 0:3], { z12.s - z15.s }
     add w13, w13, #4
+    mov za1h.s[w13, 0:3], { z24.s - z27.s }
+    add w13, w13, #4
+    mov za1h.s[w13, 0:3], { z28.s - z31.s }
+
+
+    ld1w { z0.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z8.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z1.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z9.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z2.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z10.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z3.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z11.s }, p1/z, [x4]
+    add x4, x4, #60
+
+    ld1w { z4.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z12.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z5.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z13.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z6.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z14.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z7.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z15.s }, p1/z, [x4]
+    add x4, x4, #60
+
+    ld1w { z16.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z24.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z17.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z25.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z18.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z26.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z19.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z27.s }, p1/z, [x4]
+    add x4, x4, #60
+
+    ld1w { z20.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z28.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z21.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z29.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z22.s  }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z30.s }, p1/z, [x4]
+    add x4, x4, #60
+    ld1w { z23.s }, p0/z, [x4]
+    add x4, x4, #64
+    ld1w { z31.s }, p1/z, [x4]
+
+    mov	za2h.s[w14, 0:3], { z0.s - z3.s }  
     add w14, w14, #4
+    mov	za2h.s[w14, 0:3], { z4.s - z7.s }
+    add w14, w14, #4
+    mov	za2h.s[w14, 0:3], { z16.s - z19.s }
+    add w14, w14, #4
+    mov	za2h.s[w14, 0:3], { z20.s - z23.s }
+
+    mov za3h.s[w15, 0:3], { z8.s - z11.s }  
+    add w15, w15, #4  
+    mov za3h.s[w15, 0:3], { z12.s - z15.s }
     add w15, w15, #4
-
-    add x2, x2, #124
-    add x3, x3, #124
-    add x4, x4, #124
-    add x5, x5, #124
-
-    cbnz x7, load_loop_31_32
-
-
-    smstart sm
-    ptrue p0.b
-
-    mov x10, #1
-    mov x11, #16
-    whilelt p1.s, x10, x11
+    mov za3h.s[w15, 0:3], { z24.s - z27.s }
+    add w15, w15, #4
+    mov za3h.s[w15, 0:3], { z28.s - z31.s }
   
 loop_31_32_k:
 
@@ -485,11 +631,6 @@ loop_31_32_k:
 
     cbnz x6, loop_31_32_k
 
-    smstop sm
-
-    // store loop register
-    mov x7, #16
-
     mov x2, x9
     add x3, x9, #64
     add x4, x9, #1984
@@ -501,32 +642,178 @@ loop_31_32_k:
     mov w14, #2
     mov w15, #3
 
-store_loop_31_32:
-
-    sub x7, x7, #1
-
-    str za[w12, #0], [x2]
-    str za[w13, #0], [x3]
-    str za[w14, #0], [x4]
-    str za[w15, #0], [x5]
-
+    mov	{ z0.s - z3.s }, za0h.s[w12, 0:3] 
+    add w12, w12, #4  
+    mov	{ z4.s - z7.s }, za0h.s[w12, 0:3]
     add w12, w12, #4
+    mov	{ z16.s - z19.s }, za0h.s[w12, 0:3]
+    add w12, w12, #4
+    mov	{ z20.s - z23.s }, za0h.s[w12, 0:3]
+
+    mov { z8.s - z11.s }, za1h.s[w13, 0:3]
+    add w13, w13, #4  
+    mov { z12.s - z15.s }, za1h.s[w13, 0:3]
     add w13, w13, #4
+    mov { z24.s - z27.s }, za1h.s[w13, 0:3]
+    add w13, w13, #4
+    mov { z28.s - z31.s }, za1h.s[w13, 0:3]
+
+    st1w { z0.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z8.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z1.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z9.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z2.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z10.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z3.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z11.s }, p1, [x2]
+    add x2, x2, #60
+
+    st1w { z4.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z12.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z5.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z13.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z6.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z14.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z7.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z15.s }, p1, [x2]
+    add x2, x2, #60
+
+    st1w { z16.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z24.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z17.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z25.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z18.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z26.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z19.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z27.s }, p1, [x2]
+    add x2, x2, #60
+
+    st1w { z20.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z28.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z21.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z29.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z22.s  }, p0, [x2]
+    add x2, x2, #64
+    st1w { z30.s }, p1, [x2]
+    add x2, x2, #60
+    st1w { z23.s }, p0, [x2]
+    add x2, x2, #64
+    st1w { z31.s }, p1, [x2]
+
+    mov	{ z0.s - z3.s }, za2h.s[w14, 0:3]
+    add w14, w14, #4  
+    mov	{ z4.s - z7.s }, za2h.s[w14, 0:3]
     add w14, w14, #4
+    mov	{ z16.s - z19.s }, za2h.s[w14, 0:3]
+    add w14, w14, #4
+    mov	{ z20.s - z23.s }, za2h.s[w14, 0:3]
+
+    mov { z8.s - z11.s }, za3h.s[w15, 0:3]
+    add w15, w15, #4  
+    mov { z12.s - z15.s }, za3h.s[w15, 0:3]
     add w15, w15, #4
+    mov { z24.s - z27.s }, za3h.s[w15, 0:3]
+    add w15, w15, #4
+    mov { z28.s - z31.s }, za3h.s[w15, 0:3]
 
-    add x2, x2, #124
-    add x3, x3, #124
-    add x4, x4, #124
-    add x5, x5, #124
+    st1w { z0.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z8.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z1.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z9.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z2.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z10.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z3.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z11.s }, p1, [x4]
+    add x4, x4, #60
 
-    cbnz x7, store_loop_31_32
+    st1w { z4.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z12.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z5.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z13.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z6.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z14.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z7.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z15.s }, p1, [x4]
+    add x4, x4, #60
 
-    // store start of third tile again
-    add x4, x9, #1984
-    mov w13, #2
-    str za[w13, #0], [x4]
+    st1w { z16.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z24.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z17.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z25.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z18.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z26.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z19.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z27.s }, p1, [x4]
+    add x4, x4, #60
+
+    st1w { z20.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z28.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z21.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z29.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z22.s  }, p0, [x4]
+    add x4, x4, #64
+    st1w { z30.s }, p1, [x4]
+    add x4, x4, #60
+    st1w { z23.s }, p0, [x4]
+    add x4, x4, #64
+    st1w { z31.s }, p1, [x4]
 
     smstop
+
+    // PCS: restore
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
 
     ret
