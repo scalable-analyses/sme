@@ -14,6 +14,8 @@ extern int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t reps );
 extern int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t reps );
 extern int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t reps );
 extern int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t reps );
+extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15( int64_t reps);
+extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8( int64_t reps);
 extern int peak_sme_fmopa_4_reorder_fp32_fp32_fp32( int64_t reps );
 extern int peak_sme_fmopa_fp64_fp64_fp64( int64_t reps );
 extern int peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32( int64_t reps );
@@ -345,6 +347,18 @@ void run_micro_benchmark( int i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_fp32_fp32_fp32 );
+
+  printf( "Determining FP32 SME predicated (8/16) FMOPA performance (4 tiles) ...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 250000000 : 50000000,
+               peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8 );
+
+  printf( "Determining FP32 SME predicated (15/16) FMOPA performance (4 tiles) ...\n" );
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 250000000 : 50000000,
+               peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15 );
 
   printf( "Determining FP32 SME FMOPA performance (4 tiles, reordering)...\n" );
   bench_micro( i_num_threads,
