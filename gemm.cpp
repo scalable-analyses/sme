@@ -248,6 +248,11 @@ void bench_gemm( int        i_num_threads,
     free( l_c[l_td] );
     free( l_c_ref[l_td] );
   }
+
+  delete[] l_a;
+  delete[] l_bt;
+  delete[] l_c;
+  delete[] l_c_ref;
 }
 
 void run_gemm( int i_num_threads,
