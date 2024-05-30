@@ -12,11 +12,12 @@ void rep_accelerate( int64_t         i_num_reps,
                      int64_t         i_k,
                      float   const * i_a,
                      float   const * i_bt,
-                     float         * io_c ) {
+                     float         * io_c,
+                     CBLAS_TRANSPOSE i_b_trans ) {
   for( int64_t l_re = 0; l_re < i_num_reps; l_re++ ) {
     cblas_sgemm( CblasColMajor,
                  CblasNoTrans,
-                 CblasTrans,
+                 i_b_trans,
                  i_m,
                  i_n,
                  i_k,
@@ -57,7 +58,13 @@ void bench_gemm( int        i_num_threads,
                  void    (* i_kernel)( float const *,
                                        float const *,
                                        float       * ) ) {
-  std::cout << "Running C+=AB^T benchmark" << std::endl;
+  CBLAS_TRANSPOSE l_b_trans = CblasTrans;
+  if( i_kernel == gemm_micro_32_no_trans ){
+    std::cout << "Running C+=AB benchmark" << std::endl;
+    l_b_trans = CblasNoTrans;
+  } else {
+    std::cout << "Running C+=AB^T benchmark" << std::endl;
+  }
   std::cout << "  num_threads: " << i_num_threads << std::endl;
 
   // set up parallelization
@@ -141,7 +148,8 @@ void bench_gemm( int        i_num_threads,
                                             i_k,
                                             l_a[l_td],
                                             l_bt[l_td],
-                                            l_c_ref[l_td] );
+                                            l_c_ref[l_td],
+                                            l_b_trans );
                           } );
   }
   dispatch_group_wait( l_group,
@@ -196,7 +204,8 @@ void bench_gemm( int        i_num_threads,
                                             i_k,
                                             l_a[l_td],
                                             l_bt[l_td],
-                                            l_c[l_td] );
+                                            l_c[l_td],
+                                            l_b_trans );
                           } );
   }
   dispatch_group_wait( l_group,
@@ -272,4 +281,20 @@ void run_gemm( int i_num_threads,
               32,
               32,
               gemm_micro_31_32_32 );
+
+  bench_gemm( i_num_threads,
+              i_qos_type,
+              1000000,
+              128,
+              128,
+              128,
+              gemm_micro_128_128_128 );
+
+  bench_gemm( i_num_threads,
+              i_qos_type,
+              10000000,
+              32,
+              32,
+              32,
+              gemm_micro_32_no_trans );
 }
