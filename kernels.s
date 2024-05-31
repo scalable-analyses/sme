@@ -843,66 +843,6 @@ _example_zip4_fp32:
 
     .text
     .align 4
-    .global _triad_neon
-_triad_neon:
-    str d8, [sp, #-16]!
-
-    fmov v8.4s, #2.000000000000000000e+00
-
-loop_triad_neon_rep:
-    mov x5, x1
-    mov x6, x2
-    mov x7, x3
-    mov x8, x4
-
-    // perform triad in chunks of 48 values
-loop_triad_neon_val:
-    ld1 {v0.4s-v3.4s}, [x6]
-    ld1 {v4.4s-v7.4s}, [x7]
-    add x6, x6, #0x40
-    add x7, x7, #0x40
-    fmla v0.4s, v8.4s, v4.4s
-    fmla v1.4s, v8.4s, v5.4s
-    fmla v2.4s, v8.4s, v6.4s
-    fmla v3.4s, v8.4s, v7.4s
-    st1 {v0.4s-v3.4s}, [x8]
-    add x8, x8, #0x40
-
-    ld1 {v16.4s-v19.4s}, [x6]
-    ld1 {v20.4s-v23.4s}, [x7]
-    add x6, x6, #0x40
-    add x7, x7, #0x40
-    fmla v16.4s, v8.4s, v20.4s
-    fmla v17.4s, v8.4s, v21.4s
-    fmla v18.4s, v8.4s, v22.4s
-    fmla v19.4s, v8.4s, v23.4s
-    st1 {v16.4s-v19.4s}, [x8]
-    add x8, x8, #0x40
-
-    ld1 {v24.4s-v27.4s}, [x6]
-    ld1 {v28.4s-v31.4s}, [x7]
-    add x6, x6, #0x40
-    add x7, x7, #0x40
-    fmla v24.4s, v8.4s, v28.4s
-    fmla v25.4s, v8.4s, v29.4s
-    fmla v26.4s, v8.4s, v30.4s
-    fmla v27.4s, v8.4s, v31.4s
-    st1 {v24.4s-v27.4s}, [x8]
-    add x8, x8, #0x40
-
-    sub x5, x5, #48
-
-    cbnz x5, loop_triad_neon_val
-
-    sub x0, x0, #1
-    cbnz x0, loop_triad_neon_rep
-
-    ldr d8, [sp], #16
-    ret
-
-
-    .text
-    .align 4
     .global _peak_amx_fma_fp32_fp32_fp32
 _peak_amx_fma_fp32_fp32_fp32:
     // enable AMX
@@ -1745,5 +1685,258 @@ loop_peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8:
     ldp  d8,  d9, [sp], #16
 
     mov x0, 32*256
+
+    ret
+
+
+    .global _copy_ssve_ldr
+    .align 4
+_copy_ssve_ldr:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+
+loop_copy_ssve_ldr_outer:
+    sub x0, x0, #1
+
+    mov x4, x1
+    mov x5, x2
+    mov x6, x3
+
+loop_copy_ssve_ldr_inner_start:
+    cmp x4, #16*16
+    b.lt loop_copy_ssve_ldr_inner_end
+
+    ldr z0, [x5]
+    add x5, x5, #16*4
+    ldr z1, [x5]
+    add x5, x5, #16*4
+    ldr z2, [x5]
+    add x5, x5, #16*4
+    ldr z3, [x5]
+    add x5, x5, #16*4
+
+    str z0, [x6]
+    add x6, x6, #16*4
+    str z1, [x6]
+    add x6, x6, #16*4
+    str z2, [x6]
+    add x6, x6, #16*4
+    str z3, [x6]
+    add x6, x6, #16*4
+
+
+    ldr z4, [x5]
+    add x5, x5, #16*4
+    ldr z5, [x5]
+    add x5, x5, #16*4
+    ldr z6, [x5]
+    add x5, x5, #16*4
+    ldr z7, [x5]
+    add x5, x5, #16*4
+
+    str z4, [x6]
+    add x6, x6, #16*4
+    str z5, [x6]
+    add x6, x6, #16*4
+    str z6, [x6]
+    add x6, x6, #16*4
+    str z7, [x6]
+    add x6, x6, #16*4
+
+
+    ldr z8, [x5]
+    add x5, x5, #16*4
+    ldr z9, [x5]
+    add x5, x5, #16*4
+    ldr z10, [x5]
+    add x5, x5, #16*4
+    ldr z11, [x5]
+    add x5, x5, #16*4
+
+    str z8, [x6]
+    add x6, x6, #16*4
+    str z9, [x6]
+    add x6, x6, #16*4
+    str z10, [x6]
+    add x6, x6, #16*4
+    str z11, [x6]
+    add x6, x6, #16*4
+
+
+    ldr z12, [x5]
+    add x5, x5, #16*4
+    ldr z13, [x5]
+    add x5, x5, #16*4
+    ldr z14, [x5]
+    add x5, x5, #16*4
+    ldr z15, [x5]
+    add x5, x5, #16*4
+
+    str z12, [x6]
+    add x6, x6, #16*4
+    str z13, [x6]
+    add x6, x6, #16*4
+    str z14, [x6]
+    add x6, x6, #16*4
+    str z15, [x6]
+    add x6, x6, #16*4
+
+    sub x4, x4, #16*16
+
+    b loop_copy_ssve_ldr_inner_start
+
+loop_copy_ssve_ldr_inner_end:
+    cbnz x0, loop_copy_ssve_ldr_outer
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    ret
+
+
+    .global _copy_ssve_ld1w_2
+    .align 4
+_copy_ssve_ld1w_2:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+
+    ptrue pn8.b
+
+loop_copy_ssve_ld1w_2_outer:
+    sub x0, x0, #1
+
+    mov x4, x1
+    mov x5, x2
+    mov x6, x3
+
+loop_copy_ssve_ld1w_2_inner_start:
+    cmp x4, #16*16
+    b.lt loop_copy_ssve_ld1w_2_inner_end
+
+    ld1w { z0.s, z1.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+    ld1w { z2.s, z3.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+
+    st1w { z0.s, z1.s }, pn8, [x6]
+    add x6, x6, #32*4
+    st1w { z2.s, z3.s }, pn8, [x6]
+    add x6, x6, #32*4
+
+    ld1w { z4.s, z5.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+    ld1w { z6.s, z7.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+
+    st1w { z4.s, z5.s }, pn8, [x6]
+    add x6, x6, #32*4
+    st1w { z6.s, z7.s }, pn8, [x6]
+    add x6, x6, #32*4
+
+    ld1w { z8.s, z9.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+    ld1w { z10.s, z11.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+
+    st1w { z8.s, z9.s }, pn8, [x6]
+    add x6, x6, #32*4
+    st1w { z10.s, z11.s }, pn8, [x6]
+    add x6, x6, #32*4
+
+    ld1w { z12.s, z13.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+    ld1w { z14.s, z15.s }, pn8/z, [x5]
+    add x5, x5, #32*4
+
+    st1w { z12.s, z13.s }, pn8, [x6]
+    add x6, x6, #32*4
+    st1w { z14.s, z15.s }, pn8, [x6]
+    add x6, x6, #32*4
+
+    sub x4, x4, #16*16
+
+    b loop_copy_ssve_ld1w_2_inner_start
+
+loop_copy_ssve_ld1w_2_inner_end:
+    cbnz x0, loop_copy_ssve_ld1w_2_outer
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    ret
+
+
+    .global _copy_ssve_ld1w_4
+    .align 4
+_copy_ssve_ld1w_4:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+
+    ptrue pn8.b
+
+loop_copy_ssve_ld1w_4_outer:
+    sub x0, x0, #1
+
+    mov x4, x1
+    mov x5, x2
+    mov x6, x3
+
+loop_copy_ssve_ld1w_4_inner_start:
+    cmp x4, #16*16
+    b.lt loop_copy_ssve_ld1w_4_inner_end
+
+    ld1w { z0.s, z1.s, z2.s, z3.s }, pn8/z, [x5]
+    add x5, x5, #64*4
+    st1w { z0.s, z1.s, z2.s, z3.s }, pn8, [x6]
+    add x6, x6, #64*4
+
+    ld1w { z4.s, z5.s, z6.s, z7.s }, pn8/z, [x5]
+    add x5, x5, #64*4
+    st1w { z4.s, z5.s, z6.s, z7.s }, pn8, [x6]
+    add x6, x6, #64*4
+
+    ld1w { z8.s, z9.s, z10.s, z11.s }, pn8/z, [x5]
+    add x5, x5, #64*4
+    st1w { z8.s, z9.s, z10.s, z11.s }, pn8, [x6]
+    add x6, x6, #64*4
+
+    ld1w { z12.s, z13.s, z14.s, z15.s }, pn8/z, [x5]
+    add x5, x5, #64*4
+    st1w { z12.s, z13.s, z14.s, z15.s }, pn8, [x6]
+    add x6, x6, #64*4
+
+    sub x4, x4, #16*16
+
+    b loop_copy_ssve_ld1w_4_inner_start
+
+loop_copy_ssve_ld1w_4_inner_end:
+    cbnz x0, loop_copy_ssve_ld1w_4_outer
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
 
     ret

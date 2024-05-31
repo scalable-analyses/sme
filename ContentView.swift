@@ -1,12 +1,50 @@
 import SwiftUI
 
+enum BenchType {
+  case micro
+  case cblas
+  case copy
+  case check
+  case gemm
+  case showcase
+}
+
+enum CopyKernel: Int32 {
+  case ssve_ldr    = 0
+  case ssve_ld1w_2 = 1
+  case ssve_ld1w_4 = 2
+}
+
+enum QoS: Int32 {
+  case default_qos      = 0
+  case user_interactive = 1
+  case user_initiated   = 2
+  case utility          = 3
+  case background       = 4
+}
+
+enum CheckType {
+  case sve
+  case streaming_sve
+  case sme
+  case sve_streaming_length
+  case neon_bf16
+}
+
+enum ShowcaseType {
+  case fp32_fmopa
+  case bf16_bf16_fp32_bfmopa
+  case fp32_zip4
+}
+
 struct ContentView: View {
   @State private var is_loading = false
-  @State private var bench_type = 0
+  @State private var bench_type = BenchType.micro
+  @State private var copy_kernel = CopyKernel.ssve_ldr
   @State private var num_threads = 1
-  @State private var qos = 1
-  @State private var check = 0
-  @State private var showcase = 0
+  @State private var qos = QoS.user_interactive
+  @State private var check_type = CheckType.sme
+  @State private var showcase_type = ShowcaseType.fp32_fmopa
 
   var body: some View {
     VStack() {
@@ -20,43 +58,51 @@ struct ContentView: View {
 
       List {
         Picker("Benchmark Type", selection: $bench_type) {
-          Text("Micro").tag(0)
-          Text("CBLAS").tag(1)
-          Text("Bandwidth").tag(2)
-          Text("Check").tag(3)
-          Text("GEMM").tag(4)
-          Text("Showcase").tag(5)
+          Text("Micro").tag(    BenchType.micro     )
+          Text("CBLAS").tag(    BenchType.cblas     )
+          Text("Copy").tag(     BenchType.copy      )
+          Text("Check").tag(    BenchType.check     )
+          Text("GEMM").tag(     BenchType.gemm      )
+          Text("Showcase").tag( BenchType.showcase  )
         }
 
-        if( bench_type == 0 || bench_type == 4 ) {
+        if( bench_type == BenchType.micro || bench_type == BenchType.gemm ) {
           Picker("Number of Threads", selection: $num_threads) {
             ForEach(1..<7) {
               Text("\($0)").tag($0)
             }
           }
           Picker("Quality of Service", selection: $qos) {
-            Text("Default").tag(0)
-            Text("User Interactive").tag(1)
-            Text("User Initiated").tag(2)
-            Text("Utility").tag(3)
-            Text("Background").tag(4)
+            Text("Default").tag(          QoS.default_qos      )
+            Text("User Interactive").tag( QoS.user_interactive )
+            Text("User Initiated").tag(   QoS.user_initiated   )
+            Text("Utility").tag(          QoS.utility          )
+            Text("Background").tag(       QoS.background       )
           }
         }
 
-        if( bench_type == 3 ) {
-          Picker("Check", selection: $check) {
-            Text("SVE").tag(0)
-            Text("Streaming SVE").tag(1)
-            Text("SME").tag(2)
-            Text("SVE Streaming Vector Length").tag(3)
-            Text("Neon BF16").tag(4)
+        if( bench_type == BenchType.copy ) {
+          Picker("Kernel", selection: $copy_kernel) {
+            Text("SSVE LDR").tag(                CopyKernel.ssve_ldr    )
+            Text("SSVE LD1W (2 registers)").tag( CopyKernel.ssve_ld1w_2 )
+            Text("SSVE LD1W (4 registers)").tag( CopyKernel.ssve_ld1w_4 )
           }
         }
-        if( bench_type == 5 ) {
-          Picker( "Showcase", selection: $showcase ) {
-            Text("FP32 FMOPA").tag(0)
-            Text("BF16-BF16-FP32 BFMOPA").tag(1)
-            Text("FP32 ZIP 4").tag(2)
+
+        if( bench_type == BenchType.check ) {
+          Picker("Check", selection: $check_type) {
+            Text("SVE").tag(                         CheckType.sve                  )
+            Text("Streaming SVE").tag(               CheckType.streaming_sve        )
+            Text("SME").tag(                         CheckType.sme                  )
+            Text("SVE Streaming Vector Length").tag( CheckType.sve_streaming_length )
+            Text("Neon BF16").tag(                   CheckType.neon_bf16            )
+          }
+        }
+        if( bench_type == BenchType.showcase ) {
+          Picker( "Showcase", selection: $showcase_type ) {
+            Text("FP32 FMOPA").tag(            ShowcaseType.fp32_fmopa            )
+            Text("BF16-BF16-FP32 BFMOPA").tag( ShowcaseType.bf16_bf16_fp32_bfmopa )
+            Text("FP32 ZIP 4").tag(            ShowcaseType.fp32_zip4             )
           }
         }
       }
@@ -65,45 +111,45 @@ struct ContentView: View {
         is_loading = true
 
         DispatchQueue.global(qos: .userInitiated).async {
-          if( bench_type == 0 ) {
+          if( bench_type == BenchType.micro ) {
             run_micro_benchmark( Int32(num_threads),
-                                 Int32(qos) )
+                                 qos.rawValue )
           }
-          else if( bench_type == 1 ) {
+          else if( bench_type == BenchType.cblas ) {
             run_cblas_benchmark()
           }
-          else if( bench_type == 2 ) {
-            run_bandwidth_benchmark()
+          else if( bench_type == BenchType.copy ) {
+            run_copy_benchmark( copy_kernel.rawValue )
           }
-          else if( bench_type == 3 ) {
-            if( check == 0 ) {
+          else if( bench_type == BenchType.check ) {
+            if( check_type == CheckType.sve ) {
               check_sve_support()
             }
-            else if( check == 1 ) {
+            else if( check_type == CheckType.streaming_sve ) {
               check_streaming_sve_support()
             }
-            else if( check == 2 ) {
+            else if( check_type == CheckType.sme ) {
               check_sme_support()
             }
-            else if( check == 3 ) {
+            else if( check_type == CheckType.sve_streaming_length ) {
               check_sve_streaming_length()
             }
-            else if( check == 4 ) {
+            else if( check_type == CheckType.neon_bf16 ) {
               check_neon_bf16_support()
             }
           }
-          else if( bench_type == 4 ) {
+          else if( bench_type == BenchType.gemm ) {
             run_gemm( Int32(num_threads),
-                      Int32(qos) )
+                      qos.rawValue )
           }
-          else if( bench_type == 5 ) {
-            if( showcase == 0 ) {
+          else if( bench_type == BenchType.showcase ) {
+            if( showcase_type == ShowcaseType.fp32_fmopa ) {
               showcase_fmopa_fp32_fp32_fp32()
             }
-            else if( showcase == 1 ) {
+            else if( showcase_type == ShowcaseType.bf16_bf16_fp32_bfmopa ) {
               showcase_bfmopa_bf16_bf16_fp32()
             }
-            else if( showcase == 2 ) {
+            else if( showcase_type == ShowcaseType.fp32_zip4 ) {
               showcase_zip4_fp32()
             }
           }

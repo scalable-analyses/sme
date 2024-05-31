@@ -8,34 +8,40 @@
 #include <Accelerate/Accelerate.h>
 #include <stdio.h>
 
-extern int peak_neon_fmla_fp32_fp32_fp32( int64_t reps );
-extern int peak_neon_bfmmla_bf16_bf16_fp32( int64_t reps );
-extern int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15( int64_t reps);
-extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8( int64_t reps);
-extern int peak_sme_fmopa_4_reorder_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_fp64_fp64_fp64( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32( int64_t reps );
-extern int peak_sme_fmopa_fp16_fp16_fp32( int64_t reps );
-extern int peak_sme_fmopa_fp16_fp16_fp16( int64_t reps );
-extern int peak_sme_bfmopa_bf16_bf16_fp32( int64_t reps );
-extern int peak_sme_bfmopa_bf16_bf16_bf16( int64_t reps );
-extern int peak_sme_smopa_i8_i8_i32( int64_t reps );
-extern int peak_sme_smopa_i16_i16_i32( int64_t reps );
-extern int peak_amx_fma_fp32_fp32_fp32( int64_t reps );
-extern void triad_neon( uint64_t        i_nRepetitions,
-                        uint64_t        i_nValues,
-                        float    const * i_a,
-                        float    const * i_b,
-                        float          * o_c );
-                
+extern int peak_neon_fmla_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_neon_bfmmla_bf16_bf16_fp32( int64_t i_num_reps );
+extern int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15( int64_t i_num_reps);
+extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8( int64_t i_num_reps);
+extern int peak_sme_fmopa_4_reorder_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_fp64_fp64_fp64( int64_t i_num_reps );
+extern int peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_fp16_fp16_fp32( int64_t i_num_reps );
+extern int peak_sme_fmopa_fp16_fp16_fp16( int64_t i_num_reps );
+extern int peak_sme_bfmopa_bf16_bf16_fp32( int64_t i_num_reps );
+extern int peak_sme_bfmopa_bf16_bf16_bf16( int64_t i_num_reps );
+extern int peak_sme_smopa_i8_i8_i32( int64_t i_num_reps );
+extern int peak_sme_smopa_i16_i16_i32( int64_t i_num_reps );
+extern int peak_amx_fma_fp32_fp32_fp32( int64_t i_num_reps );
+extern void copy_ssve_ldr( int64_t          i_num_reps,
+                           int64_t          i_num_vals,
+                           float    const * i_a,
+                           float          * o_b );
+extern void copy_ssve_ld1w_2( int64_t          i_num_reps,
+                              int64_t          i_num_vals,
+                              float    const * i_a,
+                              float          * o_b );
+extern void copy_ssve_ld1w_4( int64_t          i_num_reps,
+                              int64_t          i_num_vals,
+                              float    const * i_a,
+                              float          * o_b );
 
 void bench_micro( int        i_num_threads,
                   int        i_qos_class,
@@ -100,66 +106,78 @@ void bench_micro( int        i_num_threads,
   printf( "  GOPS: %f\n", l_gops );
 }
 
-void bench_triad( int64_t i_num_values,
-                  int64_t i_num_reps ) {
+void bench_copy( int64_t    i_num_vals,
+                 int64_t    i_offset_bytes,
+                 int64_t    i_num_reps,
+                 void    (* i_kernel)( int64_t,
+                                       int64_t,
+                                       float const *,
+                                       float       * ) ) {
   struct timeval l_start;
   struct timeval l_end;
   long l_seconds = 0;
   long l_useconds = 0;
   double total_time = 0;
 
-  printf( "Running triad with Neon...\n" );
+  printf( "Running copy benchmark...\n" );
 
   // allocate memory
   float * l_a = 0;
   float * l_b = 0;
-  float * l_c = 0;
 
-  posix_memalign( (void**) &l_a, 128, i_num_values * sizeof(float) );
-  posix_memalign( (void**) &l_b, 128, i_num_values * sizeof(float) );
-  posix_memalign( (void**) &l_c, 128, i_num_values * sizeof(float) );
+  posix_memalign( (void**) &l_a, 128, i_num_vals * sizeof(float) + 127 );
+  posix_memalign( (void**) &l_b, 128, i_num_vals * sizeof(float) + 127 );
+
+  l_a = (float*) ( (char *) l_a + i_offset_bytes );
+  l_b = (float*) ( (char *) l_b + i_offset_bytes );
 
   // init data
-  for( int64_t l_en = 0; l_en < i_num_values; l_en++ ) {
-    l_a[l_en] = 1;
-    l_b[l_en] = 2;
-    l_c[l_en] = 3;
+  for( int64_t l_en = 0; l_en < i_num_vals; l_en++ ) {
+    l_a[l_en] = 7743;
+    l_b[l_en] = 0;
   }
 
+  // run copy benchmark
   gettimeofday( &l_start, NULL );
-  triad_neon( i_num_reps,
-              i_num_values,
-              l_a,
-              l_b,
-              l_c );
+  i_kernel( i_num_reps,
+            i_num_vals,
+            l_a,
+            l_b );
   gettimeofday( &l_end, NULL );
 
-  for( int64_t l_en = 0; l_en < i_num_values; l_en++ ) {
-    if( l_c[l_en] != 5 ){
-      printf( "  Error at position %" PRId64 ": %f\n", l_en, l_c[l_en] );
-      return;
+  // check results
+  for( int64_t l_en = 0; l_en < i_num_vals; l_en++ ) {
+    if( l_b[l_en] != 7743 ){
+      printf( "  Error at position %" PRId64 ": %f\n", l_en, l_b[l_en] );
+      break;
     }
   }
 
+  // print results
   l_seconds  = l_end.tv_sec  - l_start.tv_sec;
   l_useconds = l_end.tv_usec - l_start.tv_usec;
   total_time = l_seconds + l_useconds/1000000.0;
 
-  double l_num_bytes = 3 * i_num_reps * i_num_values * 4;
+  double l_num_bytes = 2 * i_num_reps * i_num_vals * 4;
   double l_gibs = l_num_bytes / (1024.0*1024.0*1024.0);
          l_gibs /= total_time;
   
-  double l_mib_per_array = i_num_values * 4 / (1024.0*1024.0);
+  double l_mib_per_iter = i_num_vals * 4 / (1024.0*1024.0);
 
+  printf( "  #Values:       %" PRId64 "\n", i_num_vals );
+  printf( "  Offset:        %" PRId64 "\n", i_offset_bytes );
   printf( "  Repetitions:   %" PRId64 "\n", i_num_reps );
-  printf( "  #Values:       %" PRId64 "\n", i_num_values );
-  printf( "  MiB per array: %f\n", l_mib_per_array );
+  printf( "  MiB per iter:  %f\n", l_mib_per_iter );
   printf( "  Total time:    %f\n", total_time );
   printf( "  GiB/s:         %f\n", l_gibs );
+  printf( "  CSV_DATA: %" PRId64 ",%" PRId64 ",%" PRId64 ",%f,%f,%f\n",
+             i_num_vals, i_offset_bytes, i_num_reps, l_mib_per_iter, total_time, l_gibs );
 
+  // free memory
+  l_a = (float*) ( (char *) l_a - i_offset_bytes );
+  l_b = (float*) ( (char *) l_b - i_offset_bytes );
   free( l_a );
   free( l_b );
-  free( l_c );
 }
 
 void bench_cblas( int64_t i_m,
@@ -465,17 +483,45 @@ void run_cblas_benchmark(){
 }
 
 /*
- * Run bandwidth benchmarks
+ * Run copy benchmarks
  */
-void run_bandwidth_benchmark(){
-  int64_t l_triad_num_values = 48;
-  int64_t l_triad_num_reps = 2147483648;
+void run_copy_benchmark( int i_kernel_type ){
+  void (* l_kernel)( int64_t,
+                     int64_t,
+                     float const *,
+                     float       * ) = 0;
 
-  for( int64_t l_i = 0; l_i < 24; l_i++ ) {
-    bench_triad( l_triad_num_values,
-                 l_triad_num_reps );
+  if( i_kernel_type == 0 ) {
+    l_kernel = copy_ssve_ldr;
+  }
+  else if( i_kernel_type == 1 ) {
+    l_kernel = copy_ssve_ld1w_2;
+  }
+  else if( i_kernel_type == 2 ) {
+    l_kernel = copy_ssve_ld1w_4;
+  }
+  else{
+    printf( "Unknown kernel type: %d\n", i_kernel_type );
+    return;
+  }
 
-    l_triad_num_values *= 2;
-    l_triad_num_reps   /= 2;
+  int64_t l_off = 1;
+
+  for( int64_t l_os = 0; l_os < 8; l_os++ ) {
+    int64_t l_num_values = 256;
+    int64_t l_num_reps = 107341824;
+
+    for( int64_t l_si = 0; l_si < 22; l_si++ ) {
+      bench_copy( l_num_values,
+                  l_off,
+                  l_num_reps,
+                  l_kernel );
+
+      l_num_values *= 2;
+      l_num_reps   /= 2;
+    }
+
+    l_off *= 2;
+    l_off = l_off % 128;
   }
 }
