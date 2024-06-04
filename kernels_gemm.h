@@ -14,7 +14,7 @@ extern "C" {
   void gemm_micro_32_no_trans( float const * i_a,
                                float const * i_b,
                                float       * io_c );
-  void gemm_micro_128_128_128( float const * i_a,
-                               float const * i_b,
-                               float       * io_c );
+  void gemm_128_128_128( float const * i_a,
+                         float const * i_b,
+                         float       * io_c );
 }

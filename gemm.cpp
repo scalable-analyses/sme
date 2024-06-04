@@ -288,7 +288,7 @@ void run_gemm( int i_num_threads,
               128,
               128,
               128,
-              gemm_micro_128_128_128 );
+              gemm_128_128_128 );
 
   bench_gemm( i_num_threads,
               i_qos_type,

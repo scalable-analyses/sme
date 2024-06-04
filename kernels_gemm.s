@@ -1302,8 +1302,8 @@ loop_32_no_trans:
     ret
 
     .align 4
-    .global _gemm_micro_128_128_128
-_gemm_micro_128_128_128:
+    .global _gemm_128_128_128
+_gemm_128_128_128:
     // PCS: store
     stp  d8,  d9, [sp, #-16]!
     stp d10, d11, [sp, #-16]!
