@@ -34,6 +34,10 @@ extern void copy_ldr_z( int64_t          i_num_reps,
                         int64_t          i_num_vals,
                         float    const * i_a,
                         float          * o_b );
+extern void copy_ld1w_z_1( int64_t          i_num_reps,
+                           int64_t          i_num_vals,
+                           float    const * i_a,
+                           float          * o_b );
 extern void copy_ld1w_z_2( int64_t          i_num_reps,
                            int64_t          i_num_vals,
                            float    const * i_a,
@@ -42,6 +46,18 @@ extern void copy_ld1w_z_4( int64_t          i_num_reps,
                            int64_t          i_num_vals,
                            float    const * i_a,
                            float          * o_b );
+extern void copy_ld1w_z_strided_2( int64_t          i_num_reps,
+                                   int64_t          i_num_vals,
+                                   float    const * i_a,
+                                   float          * o_b );
+extern void copy_ld1w_z_strided_4( int64_t          i_num_reps,
+                                   int64_t          i_num_vals,
+                                   float    const * i_a,
+                                   float          * o_b );
+extern void copy_ldr_za( int64_t          i_num_reps,
+                         int64_t          i_num_vals,
+                         float    const * i_a,
+                         float          * o_b );
 
 void bench_micro( int        i_num_threads,
                   int        i_qos_class,
@@ -485,7 +501,30 @@ void run_cblas_benchmark(){
 /*
  * Run copy benchmarks
  */
-void run_copy_benchmark( int i_kernel_type ){
+void run_copy_benchmark( int i_kernel_type,
+                         int i_align_bytes,
+                         int i_qos_class ){
+  printf( "Running copy benchmarks...\n" );
+  printf( "  Kernel type: %d\n", i_kernel_type );
+  printf( "  Align bytes: %d\n", i_align_bytes );
+  printf( "  QoS class: %d\n",    i_qos_class    );
+
+  qos_class_t l_qos_class = QOS_CLASS_DEFAULT;
+
+  if( i_qos_class == 1 ) {
+    l_qos_class = QOS_CLASS_USER_INTERACTIVE;
+  }
+  else if( i_qos_class == 2 ) {
+    l_qos_class = QOS_CLASS_USER_INITIATED;
+  }
+  else if( i_qos_class == 3 ) {
+    l_qos_class = QOS_CLASS_UTILITY;
+  }
+  else if( i_qos_class == 4 ) {
+    l_qos_class = QOS_CLASS_BACKGROUND;
+  }
+  pthread_set_qos_class_self_np( l_qos_class, 0 );
+
   void (* l_kernel)( int64_t,
                      int64_t,
                      float const *,
@@ -495,33 +534,40 @@ void run_copy_benchmark( int i_kernel_type ){
     l_kernel = copy_ldr_z;
   }
   else if( i_kernel_type == 1 ) {
-    l_kernel = copy_ld1w_z_2;
+    l_kernel = copy_ld1w_z_1;
   }
   else if( i_kernel_type == 2 ) {
+    l_kernel = copy_ld1w_z_2;
+  }
+  else if( i_kernel_type == 3 ) {
     l_kernel = copy_ld1w_z_4;
+  }
+  else if( i_kernel_type == 4 ) {
+    l_kernel = copy_ld1w_z_strided_2;
+  }
+  else if( i_kernel_type == 5 ) {
+    l_kernel = copy_ld1w_z_strided_4;
+  }
+  else if( i_kernel_type == 6 ) {
+    l_kernel = copy_ldr_za;
   }
   else{
     printf( "Unknown kernel type: %d\n", i_kernel_type );
     return;
   }
 
-  int64_t l_off = 1;
+  int64_t l_off = i_align_bytes % 128;
 
-  for( int64_t l_os = 0; l_os < 8; l_os++ ) {
-    int64_t l_num_values = 256;
-    int64_t l_num_reps = 107341824;
+  int64_t l_num_values = 256;
+  int64_t l_num_reps = 107341824;
 
-    for( int64_t l_si = 0; l_si < 22; l_si++ ) {
-      bench_copy( l_num_values,
-                  l_off,
-                  l_num_reps,
-                  l_kernel );
+  for( int64_t l_si = 0; l_si < 22; l_si++ ) {
+    bench_copy( l_num_values,
+                l_off,
+                l_num_reps,
+                l_kernel );
 
-      l_num_values *= 2;
-      l_num_reps   /= 2;
-    }
-
-    l_off *= 2;
-    l_off = l_off % 128;
+    l_num_values *= 2;
+    l_num_reps   /= 2;
   }
 }

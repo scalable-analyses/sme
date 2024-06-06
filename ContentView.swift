@@ -10,9 +10,13 @@ enum BenchType {
 }
 
 enum CopyKernel: Int32 {
-  case ldr_z    = 0
-  case ld1w_z_2 = 1
-  case ld1w_z_4 = 2
+  case ldr_z            = 0
+  case ld1w_z_1         = 1
+  case ld1w_z_2         = 2
+  case ld1w_z_4         = 3
+  case ld1w_z_strided_2 = 4
+  case ld1w_z_strided_4 = 5
+  case ldr_za           = 6
 }
 
 enum QoS: Int32 {
@@ -42,6 +46,7 @@ struct ContentView: View {
   @State private var is_loading = false
   @State private var bench_type = BenchType.micro
   @State private var copy_kernel = CopyKernel.ldr_z
+  @State private var align_bytes = [128]
   @State private var num_threads = 1
   @State private var qos = QoS.user_interactive
   @State private var check_type = CheckType.sme
@@ -84,9 +89,34 @@ struct ContentView: View {
 
         if( bench_type == BenchType.copy ) {
           Picker("Kernel", selection: $copy_kernel) {
-            Text("LDR (1x Z register)").tag(   CopyKernel.ldr_z    )
-            Text("LD1W (2x Z registers)").tag( CopyKernel.ld1w_z_2 )
-            Text("LD1W (4x Z registers)").tag( CopyKernel.ld1w_z_4 )
+            Text("LDR (1x Z register)").tag(            CopyKernel.ldr_z            )
+            Text("LD1W (1x Z registers)").tag(          CopyKernel.ld1w_z_1         )
+            Text("LD1W (2x Z registers)").tag(          CopyKernel.ld1w_z_2         )
+            Text("LD1W (4x Z registers)").tag(          CopyKernel.ld1w_z_4         )
+            Text("LD1W (2x Z registers, strided)").tag( CopyKernel.ld1w_z_strided_2 )
+            Text("LD1W (4x Z registers, strided)").tag( CopyKernel.ld1w_z_strided_4 )
+            Text("LDR (1x ZA register)").tag(           CopyKernel.ldr_za           )
+          }
+          VStack {
+            ForEach([128, 64, 32, 16, 8, 4, 2, 1], id: \.self) { alignment in
+              Toggle("\(alignment) byte Alignment", isOn: Binding(
+                get: { align_bytes.contains(alignment) },
+                set: { isOn in
+                  if isOn {
+                    align_bytes.append(alignment)
+                  } else {
+                    align_bytes.removeAll(where: { $0 == alignment })
+                  }
+                }
+              ))
+            }
+          }
+          Picker("Quality of Service", selection: $qos) {
+            Text("Default").tag(          QoS.default_qos      )
+            Text("User Interactive").tag( QoS.user_interactive )
+            Text("User Initiated").tag(   QoS.user_initiated   )
+            Text("Utility").tag(          QoS.utility          )
+            Text("Background").tag(       QoS.background       )
           }
         }
 
@@ -121,7 +151,11 @@ struct ContentView: View {
             run_cblas_benchmark()
           }
           else if( bench_type == BenchType.copy ) {
-            run_copy_benchmark( copy_kernel.rawValue )
+            for al in align_bytes {
+              run_copy_benchmark( copy_kernel.rawValue,
+                                  Int32(al),
+                                  qos.rawValue )
+            }
           }
           else if( bench_type == BenchType.check ) {
             if( check_type == CheckType.sve ) {
