@@ -35,6 +35,7 @@ enum ShowcaseType {
   case fp32_fmopa
   case bf16_bf16_fp32_bfmopa
   case fp32_zip4
+  case ld1w_2_pred
 }
 
 struct ContentView: View {
@@ -100,9 +101,10 @@ struct ContentView: View {
         }
         if( bench_type == BenchType.showcase ) {
           Picker( "Showcase", selection: $showcase_type ) {
-            Text("FP32 FMOPA").tag(            ShowcaseType.fp32_fmopa            )
-            Text("BF16-BF16-FP32 BFMOPA").tag( ShowcaseType.bf16_bf16_fp32_bfmopa )
-            Text("FP32 ZIP 4").tag(            ShowcaseType.fp32_zip4             )
+            Text("FP32 FMOPA").tag(                    ShowcaseType.fp32_fmopa            )
+            Text("BF16-BF16-FP32 BFMOPA").tag(         ShowcaseType.bf16_bf16_fp32_bfmopa )
+            Text("FP32 ZIP4").tag(                     ShowcaseType.fp32_zip4             )
+            Text("LD1W, 2 Registers, Predicated").tag( ShowcaseType.ld1w_2_pred           )
           }
         }
       }
@@ -151,6 +153,9 @@ struct ContentView: View {
             }
             else if( showcase_type == ShowcaseType.fp32_zip4 ) {
               showcase_zip4_fp32()
+            }
+            else if( showcase_type == ShowcaseType.ld1w_2_pred ) {
+              showcase_ld1w_2_pred()
             }
           }
 

@@ -14,8 +14,8 @@ extern void example_sme_bfmopa_bf16_bf16_fp32( bfloat16_t * i_a,
                                                float      * i_c );
 extern void example_zip4_fp32( float * i_a,
                                float * o_b );
-extern void example_trans16x16_fp32( float * i_a,
-                                     float * o_b );
+extern void example_ld1w_2_pred( float * i_a,
+                                 float * o_b );
 
 void showcase_fmopa_fp32_fp32_fp32() {
     printf( "Running example FP32 SME FMOPA...\n" );
@@ -90,4 +90,28 @@ void showcase_zip4_fp32() {
       }
       printf( "\n" );
     }
+}
+
+void showcase_ld1w_2_pred() {
+    printf( "Running FP32 example LD1W (2 registers, predicated)...\n" );
+    float l_a[32];
+    float l_b[32] = {0};
+
+    for( int64_t l_en = 0; l_en < 32; l_en++ ) {
+      l_a[l_en] = l_en + 1;
+    }
+
+    printf(  "  input:\n");
+    for( int64_t l_i = 0; l_i < 32; l_i++ ){
+      printf( "  %f", l_a[l_i] );
+    }
+    printf( "\n" );
+
+    example_ld1w_2_pred( l_a, l_b );
+
+    printf(  "  output:\n");
+    for( int64_t l_i = 0; l_i < 32; l_i++ ){
+      printf( "  %f", l_b[l_i] );
+    }
+    printf( "\n" );
 }

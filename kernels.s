@@ -841,6 +841,22 @@ _example_zip4_fp32:
     ret
 
 
+    .global _example_ld1w_2_pred
+    .align 4
+_example_ld1w_2_pred:
+    smstart
+
+    mov x2, #0
+    mov x3, #31
+    whilelt pn8.s, x2, x3, vlx2
+
+    ld1w {z0.s, z1.s}, pn8/z, [x0]
+    st1w {z0.s, z1.s}, pn8,   [x1]
+
+    smstop
+
+    ret
+
     .text
     .align 4
     .global _peak_amx_fma_fp32_fp32_fp32
