@@ -10,9 +10,9 @@ enum BenchType {
 }
 
 enum CopyKernel: Int32 {
-  case ssve_ldr    = 0
-  case ssve_ld1w_2 = 1
-  case ssve_ld1w_4 = 2
+  case ldr_z    = 0
+  case ld1w_z_2 = 1
+  case ld1w_z_4 = 2
 }
 
 enum QoS: Int32 {
@@ -41,7 +41,7 @@ enum ShowcaseType {
 struct ContentView: View {
   @State private var is_loading = false
   @State private var bench_type = BenchType.micro
-  @State private var copy_kernel = CopyKernel.ssve_ldr
+  @State private var copy_kernel = CopyKernel.ldr_z
   @State private var num_threads = 1
   @State private var qos = QoS.user_interactive
   @State private var check_type = CheckType.sme
@@ -84,9 +84,9 @@ struct ContentView: View {
 
         if( bench_type == BenchType.copy ) {
           Picker("Kernel", selection: $copy_kernel) {
-            Text("SSVE LDR").tag(                CopyKernel.ssve_ldr    )
-            Text("SSVE LD1W (2 registers)").tag( CopyKernel.ssve_ld1w_2 )
-            Text("SSVE LD1W (4 registers)").tag( CopyKernel.ssve_ld1w_4 )
+            Text("LDR (1x Z register)").tag(   CopyKernel.ldr_z    )
+            Text("LD1W (2x Z registers)").tag( CopyKernel.ld1w_z_2 )
+            Text("LD1W (4x Z registers)").tag( CopyKernel.ld1w_z_4 )
           }
         }
 

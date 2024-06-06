@@ -30,18 +30,18 @@ extern int peak_sme_bfmopa_bf16_bf16_bf16( int64_t i_num_reps );
 extern int peak_sme_smopa_i8_i8_i32( int64_t i_num_reps );
 extern int peak_sme_smopa_i16_i16_i32( int64_t i_num_reps );
 extern int peak_amx_fma_fp32_fp32_fp32( int64_t i_num_reps );
-extern void copy_ssve_ldr( int64_t          i_num_reps,
+extern void copy_ldr_z( int64_t          i_num_reps,
+                        int64_t          i_num_vals,
+                        float    const * i_a,
+                        float          * o_b );
+extern void copy_ld1w_z_2( int64_t          i_num_reps,
                            int64_t          i_num_vals,
                            float    const * i_a,
                            float          * o_b );
-extern void copy_ssve_ld1w_2( int64_t          i_num_reps,
-                              int64_t          i_num_vals,
-                              float    const * i_a,
-                              float          * o_b );
-extern void copy_ssve_ld1w_4( int64_t          i_num_reps,
-                              int64_t          i_num_vals,
-                              float    const * i_a,
-                              float          * o_b );
+extern void copy_ld1w_z_4( int64_t          i_num_reps,
+                           int64_t          i_num_vals,
+                           float    const * i_a,
+                           float          * o_b );
 
 void bench_micro( int        i_num_threads,
                   int        i_qos_class,
@@ -492,13 +492,13 @@ void run_copy_benchmark( int i_kernel_type ){
                      float       * ) = 0;
 
   if( i_kernel_type == 0 ) {
-    l_kernel = copy_ssve_ldr;
+    l_kernel = copy_ldr_z;
   }
   else if( i_kernel_type == 1 ) {
-    l_kernel = copy_ssve_ld1w_2;
+    l_kernel = copy_ld1w_z_2;
   }
   else if( i_kernel_type == 2 ) {
-    l_kernel = copy_ssve_ld1w_4;
+    l_kernel = copy_ld1w_z_4;
   }
   else{
     printf( "Unknown kernel type: %d\n", i_kernel_type );
