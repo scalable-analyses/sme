@@ -672,7 +672,7 @@ void run_copy_benchmark( int i_kernel_type,
                                      128,   //   4 GiB
                                       64 }; //   8 GiB
 
-  for( int64_t l_be = 0; l_be < 42; l_be++ ) {
+  for( int64_t l_be = 0; l_be < 47; l_be++ ) {
     bench_copy( l_num_values[l_be],
                 l_off,
                 l_num_reps[l_be],
