@@ -559,7 +559,7 @@ void run_copy_benchmark( int i_kernel_type,
   int64_t l_off = i_align_bytes % 128;
 
   int64_t l_num_values = 256;
-  int64_t l_num_reps = 107341824;
+  int64_t l_num_reps = 1717469184;
 
   for( int64_t l_si = 0; l_si < 22; l_si++ ) {
     bench_copy( l_num_values,
