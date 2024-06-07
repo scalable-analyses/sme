@@ -558,7 +558,7 @@ void run_copy_benchmark( int i_kernel_type,
 
   int64_t l_off = i_align_bytes % 128;
 
-  int64_t l_num_values[47] = {       256,    //   2 KiB
+  int64_t l_num_values[46] = {       256,    //   2 KiB
                                      512,    //   4 KiB
                                     1024,    //   8 KiB
                                     2048,    //  16 KiB
@@ -612,10 +612,9 @@ void run_copy_benchmark( int i_kernel_type,
                                 134217728,   //   1 GiB
                                 268435456,   //   2 GiB
 
-                                536870912,   //   4 GiB
-                               1073741824 }; //   8 GiB
+                                536870912 }; //   4 GiB
 
-  int64_t l_num_reps[47] = {  214683648,    //   2 KiB
+  int64_t l_num_reps[46] = {  214683648,    //   2 KiB
                               858734592,    //   4 KiB
                               429367296,    //   8 KiB
                               214683648,    //  16 KiB
@@ -669,10 +668,9 @@ void run_copy_benchmark( int i_kernel_type,
                                      512,   //   1 GiB
                                      256,   //   2 GiB
 
-                                     128,   //   4 GiB
-                                      64 }; //   8 GiB
+                                     128 }; //   4 GiB
 
-  for( int64_t l_be = 0; l_be < 47; l_be++ ) {
+  for( int64_t l_be = 0; l_be < 46; l_be++ ) {
     bench_copy( l_num_values[l_be],
                 l_off,
                 l_num_reps[l_be],
