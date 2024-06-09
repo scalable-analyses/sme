@@ -1,63 +1,65 @@
 #include "benchmark.h"
-#include <sys/time.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 #include <arm_bf16.h>
 #include <arm_neon.h>
 #include <pthread.h>
+#include <chrono>
 #include <Accelerate/Accelerate.h>
-#include <stdio.h>
+#include <iostream>
 
-extern int peak_neon_fmla_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_neon_bfmmla_bf16_bf16_fp32( int64_t i_num_reps );
-extern int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15( int64_t i_num_reps);
-extern int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8( int64_t i_num_reps);
-extern int peak_sme_fmopa_4_reorder_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_fp64_fp64_fp64( int64_t i_num_reps );
-extern int peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_fp16_fp16_fp32( int64_t i_num_reps );
-extern int peak_sme_fmopa_fp16_fp16_fp16( int64_t i_num_reps );
-extern int peak_sme_bfmopa_bf16_bf16_fp32( int64_t i_num_reps );
-extern int peak_sme_bfmopa_bf16_bf16_bf16( int64_t i_num_reps );
-extern int peak_sme_smopa_i8_i8_i32( int64_t i_num_reps );
-extern int peak_sme_smopa_i16_i16_i32( int64_t i_num_reps );
-extern int peak_amx_fma_fp32_fp32_fp32( int64_t i_num_reps );
-extern void copy_ldr_z( int64_t          i_num_reps,
-                        int64_t          i_num_vals,
-                        float    const * i_a,
-                        float          * o_b );
-extern void copy_ld1w_z_1( int64_t          i_num_reps,
-                           int64_t          i_num_vals,
-                           float    const * i_a,
-                           float          * o_b );
-extern void copy_ld1w_z_2( int64_t          i_num_reps,
-                           int64_t          i_num_vals,
-                           float    const * i_a,
-                           float          * o_b );
-extern void copy_ld1w_z_4( int64_t          i_num_reps,
-                           int64_t          i_num_vals,
-                           float    const * i_a,
-                           float          * o_b );
-extern void copy_ld1w_z_strided_2( int64_t          i_num_reps,
-                                   int64_t          i_num_vals,
-                                   float    const * i_a,
-                                   float          * o_b );
-extern void copy_ld1w_z_strided_4( int64_t          i_num_reps,
-                                   int64_t          i_num_vals,
-                                   float    const * i_a,
-                                   float          * o_b );
-extern void copy_ldr_za( int64_t          i_num_reps,
-                         int64_t          i_num_vals,
-                         float    const * i_a,
-                         float          * o_b );
+extern "C" {
+  int peak_neon_fmla_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_neon_bfmmla_bf16_bf16_fp32( int64_t i_num_reps );
+  int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15( int64_t i_num_reps);
+  int peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8( int64_t i_num_reps);
+  int peak_sme_fmopa_4_reorder_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_fp64_fp64_fp64( int64_t i_num_reps );
+  int peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_fp16_fp16_fp32( int64_t i_num_reps );
+  int peak_sme_fmopa_fp16_fp16_fp16( int64_t i_num_reps );
+  int peak_sme_bfmopa_bf16_bf16_fp32( int64_t i_num_reps );
+  int peak_sme_bfmopa_bf16_bf16_bf16( int64_t i_num_reps );
+  int peak_sme_smopa_i8_i8_i32( int64_t i_num_reps );
+  int peak_sme_smopa_i16_i16_i32( int64_t i_num_reps );
+  int peak_amx_fma_fp32_fp32_fp32( int64_t i_num_reps );
+  void copy_ldr_z( int64_t          i_num_reps,
+                   int64_t          i_num_vals,
+                   float    const * i_a,
+                   float          * o_b );
+  void copy_ld1w_z_1( int64_t          i_num_reps,
+                      int64_t          i_num_vals,
+                      float    const * i_a,
+                      float          * o_b );
+  void copy_ld1w_z_2( int64_t          i_num_reps,
+                      int64_t          i_num_vals,
+                      float    const * i_a,
+                      float          * o_b );
+  void copy_ld1w_z_4( int64_t          i_num_reps,
+                      int64_t          i_num_vals,
+                      float    const * i_a,
+                      float          * o_b );
+  void copy_ld1w_z_strided_2( int64_t          i_num_reps,
+                              int64_t          i_num_vals,
+                              float    const * i_a,
+                              float          * o_b );
+  void copy_ld1w_z_strided_4( int64_t          i_num_reps,
+                              int64_t          i_num_vals,
+                              float    const * i_a,
+                              float          * o_b );
+  void copy_ldr_za( int64_t          i_num_reps,
+                    int64_t          i_num_vals,
+                    float    const * i_a,
+                    float          * o_b );
+}
 
 void bench_micro( int        i_num_threads,
                   int        i_qos_class,
@@ -90,14 +92,12 @@ void bench_micro( int        i_num_threads,
 
   // benchmarking vars
   double l_gops = 0;
-  struct timeval l_start;
-  struct timeval l_end;
-  long l_seconds = 0;
-  long l_useconds = 0;
-  double l_total_time = 0;
+  std::chrono::steady_clock::time_point l_start;
+  std::chrono::steady_clock::time_point l_end;
+  double l_duration = 0;
 
   // run benchmark
-  gettimeofday( &l_start, NULL );
+  l_start = std::chrono::steady_clock::now();
   for( int l_td = 0; l_td < i_num_threads; l_td++ ) {
     dispatch_group_async( l_group,
                           l_queue,
@@ -105,21 +105,19 @@ void bench_micro( int        i_num_threads,
   }
   dispatch_group_wait( l_group,
                        DISPATCH_TIME_FOREVER );
-  gettimeofday( &l_end, NULL );
-  l_seconds  = l_end.tv_sec  - l_start.tv_sec;
-  l_useconds = l_end.tv_usec - l_start.tv_usec;
-  l_total_time = l_seconds + l_useconds/1000000.0;
+  l_end = std::chrono::steady_clock::now();
+  l_duration = std::chrono::duration_cast< std::chrono::duration<double> >( l_end - l_start ).count();
 
   // determine GOPS
   l_gops = i_kernel( 1 );
   l_gops *= i_num_threads;
   l_gops *= i_num_reps;
   l_gops *= 1.0E-9;
-  l_gops /= l_total_time;
+  l_gops /= l_duration;
 
-  printf( "  Repetitions:  %" PRId64 "\n", i_num_reps );
-  printf( "  Total time:  %f\n", l_total_time );
-  printf( "  GOPS: %f\n", l_gops );
+  std::cout << "  Repetitions:  " << i_num_reps << std::endl;
+  std::cout << "  Duration (s): " << l_duration << std::endl;
+  std::cout << "  GOPS:         " << l_gops     << std::endl;
 }
 
 void bench_copy( int64_t    i_num_vals,
@@ -129,13 +127,11 @@ void bench_copy( int64_t    i_num_vals,
                                        int64_t,
                                        float const *,
                                        float       * ) ) {
-  struct timeval l_start;
-  struct timeval l_end;
-  long l_seconds = 0;
-  long l_useconds = 0;
-  double total_time = 0;
+  std::chrono::steady_clock::time_point l_start;
+  std::chrono::steady_clock::time_point l_end;
+  double l_duration = 0;
 
-  printf( "Running copy benchmark...\n" );
+  std::cout << "Running copy benchmark..." << std::endl;
 
   // allocate memory
   float * l_a = 0;
@@ -154,40 +150,41 @@ void bench_copy( int64_t    i_num_vals,
   }
 
   // run copy benchmark
-  gettimeofday( &l_start, NULL );
+  l_start = std::chrono::steady_clock::now();
   i_kernel( i_num_reps,
             i_num_vals,
             l_a,
             l_b );
-  gettimeofday( &l_end, NULL );
+  l_end = std::chrono::steady_clock::now();
+  l_duration = std::chrono::duration_cast< std::chrono::duration<double> >( l_end - l_start ).count();
 
   // check results
   for( int64_t l_en = 0; l_en < i_num_vals; l_en++ ) {
     if( l_b[l_en] != 7743 ){
-      printf( "  Error at position %" PRId64 ": %f\n", l_en, l_b[l_en] );
+      std::cerr << "  Error at position " << l_en << ": " << l_b[l_en] << std::endl;
       break;
     }
   }
 
   // print results
-  l_seconds  = l_end.tv_sec  - l_start.tv_sec;
-  l_useconds = l_end.tv_usec - l_start.tv_usec;
-  total_time = l_seconds + l_useconds/1000000.0;
-
   double l_num_bytes = 2 * i_num_reps * i_num_vals * 4;
   double l_gibs = l_num_bytes / (1024.0*1024.0*1024.0);
-         l_gibs /= total_time;
+         l_gibs /= l_duration;
   
   double l_mib_per_iter = i_num_vals * 4 / (1024.0*1024.0);
 
-  printf( "  #Values:       %" PRId64 "\n", i_num_vals );
-  printf( "  Offset:        %" PRId64 "\n", i_offset_bytes );
-  printf( "  Repetitions:   %" PRId64 "\n", i_num_reps );
-  printf( "  MiB per iter:  %f\n", l_mib_per_iter );
-  printf( "  Total time:    %f\n", total_time );
-  printf( "  GiB/s:         %f\n", l_gibs );
-  printf( "  CSV_DATA: %" PRId64 ",%" PRId64 ",%" PRId64 ",%f,%f,%f\n",
-             i_num_vals, i_offset_bytes, i_num_reps, l_mib_per_iter, total_time, l_gibs );
+  std::cout << "  #Values:      " << i_num_vals << std::endl;
+  std::cout << "  Offset:       " << i_offset_bytes << std::endl;
+  std::cout << "  Repetitions:  " << i_num_reps << std::endl;
+  std::cout << "  MiB per iter: " << l_mib_per_iter << std::endl;
+  std::cout << "  Duration (s): " << l_duration << std::endl;
+  std::cout << "  GiB/s:        " << l_gibs << std::endl;
+  std::cout << "  CSV_DATA: " << i_num_vals     << ","
+                              << i_offset_bytes << ","
+                              << i_num_reps     << ","
+                              << l_mib_per_iter << ","
+                              << l_duration     << ","
+                              << l_gibs         << std::endl;
 
   // free memory
   l_a = (float*) ( (char *) l_a - i_offset_bytes );
@@ -206,20 +203,18 @@ void bench_cblas( int64_t i_m,
                   int     i_trans_b,
                   int64_t i_num_reps_initial,
                   double  i_target_time ) {
-  printf( "Running CBLAS SGEMM...\n" );
-  printf( "  M/N/K:         %" PRId64 "/%" PRId64 "/%" PRId64 "\n", i_m, i_n, i_k );
-  printf( "  ldA/ldB/ldC:   %" PRId64 "/%" PRId64 "/%" PRId64 "\n", i_lda, i_ldb, i_ldc );
-  printf( "  TransA/TransB: %d/%d\n", i_trans_a, i_trans_b );
+  std::cout << "Running CBLAS SGEMM..." << std::endl;
+  std::cout << "  M/N/K:         " << i_m << "/" << i_n << "/" << i_k << std::endl;
+  std::cout << "  ldA/ldB/ldC:   " << i_lda << "/" << i_ldb << "/" << i_ldc << std::endl;
+  std::cout << "  TransA/TransB: " << i_trans_a << "/" << i_trans_b << std::endl;
 
   // vars
   int64_t l_num_reps = 0;
   int64_t l_num_flops = 0;
   double l_gflops = 0;
-  struct timeval l_start;
-  struct timeval l_end;
-  long l_seconds = 0;
-  long l_useconds = 0;
-  double l_total_time = 0;
+  std::chrono::steady_clock::time_point l_start;
+  std::chrono::steady_clock::time_point l_end;
+  double l_duration = 0;
 
   // allocate memory
   float * l_a = NULL;
@@ -259,7 +254,7 @@ void bench_cblas( int64_t i_m,
                l_c,
                i_ldc );
 
-  gettimeofday( &l_start, NULL );
+  l_start = std::chrono::steady_clock::now();
   for( int64_t l_re = 0; l_re < i_num_reps_initial; l_re++) {
     cblas_sgemm( CblasColMajor,
                  i_trans_a == 0 ? CblasNoTrans : CblasTrans,
@@ -276,17 +271,15 @@ void bench_cblas( int64_t i_m,
                  l_c,
                  i_ldc );
   }
-  gettimeofday( &l_end, NULL );
+  l_end = std::chrono::steady_clock::now();
 
-  l_seconds    = l_end.tv_sec  - l_start.tv_sec;
-  l_useconds   = l_end.tv_usec - l_start.tv_usec;
-  l_total_time = l_seconds + l_useconds/1000000.0;
+  l_duration = std::chrono::duration_cast< std::chrono::duration<double> >( l_end - l_start ).count();
 
-  l_num_reps = (i_target_time * i_num_reps_initial) / l_total_time;
+  l_num_reps = (i_target_time * i_num_reps_initial) / l_duration;
   l_num_reps = l_num_reps > 1 ? l_num_reps : 1;
   l_num_flops = 2 * i_m * i_n * i_k * l_num_reps;
 
-  gettimeofday( &l_start, NULL );
+  l_start = std::chrono::steady_clock::now();
   for( int64_t l_re = 0; l_re < l_num_reps; l_re++ ) {
     cblas_sgemm( CblasColMajor,
                  i_trans_a == 0 ? CblasNoTrans : CblasTrans,
@@ -303,17 +296,15 @@ void bench_cblas( int64_t i_m,
                  l_c,
                  i_ldc );
   }
-  gettimeofday( &l_end, NULL );
+  l_end = std::chrono::steady_clock::now();
+  l_duration = std::chrono::duration_cast< std::chrono::duration<double> >( l_end - l_start ).count();
 
-  l_seconds    = l_end.tv_sec  - l_start.tv_sec;
-  l_useconds   = l_end.tv_usec - l_start.tv_usec;
-  l_total_time = l_seconds + l_useconds/1000000.0;
-  l_gflops = l_num_flops / l_total_time;
+  l_gflops = l_num_flops / l_duration;
   l_gflops *= 1.0E-9;
 
-  printf( "  Repetitions:   %" PRId64 "\n", l_num_reps );
-  printf( "  Total time:    %f\n", l_total_time );
-  printf( "  GFLOPS:        %f\n", l_gflops );
+  std::cout << "  Repetitions:  " << l_num_reps << std::endl;
+  std::cout << "  Duration (s): " << l_duration << std::endl;
+  std::cout << "  GFLOPS:       " << l_gflops   << std::endl;
 
   free( l_a );
   free( l_b );
@@ -322,139 +313,139 @@ void bench_cblas( int64_t i_m,
 
 void run_micro_benchmark( int i_num_threads,
                           int i_qos_class ) {
-  printf( "Running benchmarks...\n" );
-  printf( "  Threads: %d\n", i_num_threads );
+  std::cout << "Running benchmarks..." << std::endl;
+  std::cout << "  Threads: " << i_num_threads << std::endl;
   if( i_qos_class == 1 ) {
-    printf( "  QoS: User Interactive\n" );
+    std::cout << "  QoS: User Interactive" << std::endl;
   }
   else if( i_qos_class == 2 ) {
-    printf( "  QoS: User Initiated\n" );
+    std::cout << "  QoS: User Initiated" << std::endl;
   }
   else if( i_qos_class == 3 ) {
-    printf( "  QoS: Utility\n" );
+    std::cout << "  QoS: Utility" << std::endl;
   }
   else if( i_qos_class == 4 ) {
-    printf( "  QoS: Background\n" );
+    std::cout << "  QoS: Background" << std::endl;
   }
   else {
-    printf( "  QoS: Default\n" );
+    std::cout << "  QoS: Default" << std::endl;
   }
 
-  printf( "Determining FP32 Neon FMLA performance...\n" );
+  std::cout << "Determining FP32 Neon FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 1000000000 : 200000000,
                peak_neon_fmla_fp32_fp32_fp32 );
 
-  printf( "Determining BF16-BF16-FP32 BFMMLA Neon performance...\n" );
+  std::cout << "Determining BF16-BF16-FP32 BFMMLA Neon performance" << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 1000000000 : 200000000,
                peak_neon_bfmmla_bf16_bf16_fp32 );
 
-  printf( "Determining FP32 SSVE FMLA performance...\n" );
+  std::cout << "Determining FP32 SSVE FMLA (Z accumulation) performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 100000000 : 20000000,
                peak_sve_fmla_streaming_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 AMX performance...\n" );
+  std::cout << "Determining FP32 AMX performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 100000000 : 20000000,
                peak_amx_fma_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME FMOPA performance (1 tile)...\n" );
+  std::cout << "Determining FP32 SME FMOPA performance (1 tile)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_1_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME FMOPA performance (2 tiles)...\n" );
+  std::cout << "Determining FP32 SME FMOPA performance (2 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_2_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME FMOPA performance (4 tiles)...\n" );
+  std::cout << "Determining FP32 SME FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME predicated (8/16) FMOPA performance (4 tiles) ...\n" );
+  std::cout << "Determining FP32 SME predicated (8/16) FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8 );
 
-  printf( "Determining FP32 SME predicated (15/16) FMOPA performance (4 tiles) ...\n" );
+  std::cout << "Determining FP32 SME predicated (15/16) FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15 );
 
-  printf( "Determining FP32 SME FMOPA performance (4 tiles, reordering)...\n" );
+  std::cout << "Determining FP32 SME FMOPA performance (4 tiles, reordering)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_4_reorder_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME SMSTART-SMSTOP performance (8 instructions per block)...\n" );
+  std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (8 instructions per block).." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME SMSTART-SMSTOP performance (16 instructions per block)...\n" );
+  std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (16 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME SMSTART-SMSTOP performance (32 instructions per block)...\n" );
+  std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (32 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME SMSTART-SMSTOP performance (64 instructions per block)...\n" );
+  std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (64 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32 );
 
-  printf( "Determining FP32 SME SMSTART-SMSTOP performance (128 instructions per block)...\n" );
+  std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (128 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32 );
 
-  printf( "Determining FP16-FP16-FP32 SME FMOPA performance...\n" );
+  std::cout << "Determining FP16-FP16-FP32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_fp16_fp16_fp32 );
 
-  printf( "Determining BF16-BF16-FP32 SME BFMOPA performance...\n" );
+  std::cout << "Determining BF16-BF16-FP32 SME BFMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_bfmopa_bf16_bf16_fp32 );
 
-  printf( "Determining FP64 SME FMOPA performance ...\n" );
+  std::cout << "Determining FP64 SME FMOPA performance ..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_fmopa_fp64_fp64_fp64 );
 
-  printf( "Determining I8-I8-I32 SME FMOPA performance...\n" );
+  std::cout << "Determining I8-I8-I32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
                peak_sme_smopa_i8_i8_i32 );
 
-  printf( "Determining I16-I16-I32 SME FMOPA performance...\n" );
+  std::cout << "Determining I16-I16-I32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 250000000 : 50000000,
@@ -465,7 +456,7 @@ void run_micro_benchmark( int i_num_threads,
  * Run CBLAS benchmarks
  */
 void run_cblas_benchmark(){
-  printf( "Running CBLAS benchmarks...\n" );
+  std::cout << "Running CBLAS benchmarks..." << std::endl;
   int64_t l_size = 16;
   int64_t l_num_reps_initial = 65536;
   double  l_target_time = 1.0;
@@ -504,10 +495,10 @@ void run_cblas_benchmark(){
 void run_copy_benchmark( int i_kernel_type,
                          int i_align_bytes,
                          int i_qos_class ){
-  printf( "Running copy benchmarks...\n" );
-  printf( "  Kernel type: %d\n", i_kernel_type );
-  printf( "  Align bytes: %d\n", i_align_bytes );
-  printf( "  QoS class: %d\n",    i_qos_class    );
+  std::cout << "Running copy benchmarks..." << std::endl;
+  std::cout << "  Kernel type: " << i_kernel_type << std::endl;
+  std::cout << "  Align bytes: " << i_align_bytes << std::endl;
+  std::cout << "  QoS class:   " << i_qos_class   << std::endl;
 
   qos_class_t l_qos_class = QOS_CLASS_DEFAULT;
 
@@ -552,7 +543,7 @@ void run_copy_benchmark( int i_kernel_type,
     l_kernel = copy_ldr_za;
   }
   else{
-    printf( "Unknown kernel type: %d\n", i_kernel_type );
+    std::cerr << "Unknown kernel type: " << i_kernel_type << std::endl;
     return;
   }
 
