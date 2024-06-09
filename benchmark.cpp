@@ -5,6 +5,7 @@
 #include <arm_neon.h>
 #include <pthread.h>
 #include <chrono>
+#include <thread>
 #include <Accelerate/Accelerate.h>
 #include <iostream>
 
@@ -662,6 +663,9 @@ void run_copy_benchmark( int i_kernel_type,
                                      128 }; //   4 GiB
 
   for( int64_t l_be = 0; l_be < 46; l_be++ ) {
+    // sleep for 5 seconds to allow SoC to cool down
+    std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
+
     bench_copy( l_num_values[l_be],
                 l_off,
                 l_num_reps[l_be],
