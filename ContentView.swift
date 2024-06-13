@@ -45,7 +45,7 @@ enum ShowcaseType {
 struct ContentView: View {
   @State private var is_loading = false
   @State private var bench_type = BenchType.micro
-  @State private var copy_kernel = CopyKernel.ldr_z
+  @State private var copy_kernel = [CopyKernel.ldr_z]
   @State private var align_bytes = [128]
   @State private var num_threads = 1
   @State private var qos = QoS.user_interactive
@@ -88,17 +88,28 @@ struct ContentView: View {
         }
 
         if( bench_type == BenchType.copy ) {
-          Picker("Kernel", selection: $copy_kernel) {
-            Text("LDR (1x Z register)").tag(            CopyKernel.ldr_z            )
-            Text("LD1W (1x Z registers)").tag(          CopyKernel.ld1w_z_1         )
-            Text("LD1W (2x Z registers)").tag(          CopyKernel.ld1w_z_2         )
-            Text("LD1W (4x Z registers)").tag(          CopyKernel.ld1w_z_4         )
-            Text("LD1W (2x Z registers, strided)").tag( CopyKernel.ld1w_z_strided_2 )
-            Text("LD1W (4x Z registers, strided)").tag( CopyKernel.ld1w_z_strided_4 )
-            Text("LDR (1x ZA register)").tag(           CopyKernel.ldr_za           )
+          VStack {
+            ForEach([CopyKernel.ldr_z,
+                     CopyKernel.ld1w_z_1,
+                     CopyKernel.ld1w_z_2,
+                     CopyKernel.ld1w_z_4,
+                     CopyKernel.ld1w_z_strided_2,
+                     CopyKernel.ld1w_z_strided_4,
+                     CopyKernel.ldr_za], id: \.self) { kernel in
+              Toggle("\(kernel)", isOn: Binding(
+                get: { copy_kernel.contains(kernel) },
+                set: { isOn in
+                  if isOn {
+                    copy_kernel.append(kernel)
+                  } else {
+                    copy_kernel.removeAll(where: { $0 == kernel })
+                  }
+                }
+              ))
+            }
           }
           VStack {
-            ForEach([128, 64, 32, 16, 8, 4, 2, 1], id: \.self) { alignment in
+            ForEach([1, 2, 4, 8, 16, 32, 64, 128], id: \.self) { alignment in
               Toggle("\(alignment) byte Alignment", isOn: Binding(
                 get: { align_bytes.contains(alignment) },
                 set: { isOn in
@@ -152,9 +163,11 @@ struct ContentView: View {
           }
           else if( bench_type == BenchType.copy ) {
             for al in align_bytes {
-              run_copy_benchmark( copy_kernel.rawValue,
-                                  Int32(al),
-                                  qos.rawValue )
+              for kernel in copy_kernel {
+                run_copy_benchmark( Int32(kernel.rawValue),
+                                    Int32(al),
+                                    qos.rawValue )
+              }
             }
           }
           else if( bench_type == BenchType.check ) {

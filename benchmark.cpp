@@ -8,6 +8,8 @@
 #include <thread>
 #include <Accelerate/Accelerate.h>
 #include <iostream>
+#include <string>
+#include <os/proc.h>
 
 extern "C" {
   int peak_neon_fmla_fp32_fp32_fp32( int64_t i_num_reps );
@@ -61,6 +63,16 @@ extern "C" {
                     float    const * i_a,
                     float          * o_b );
 }
+
+enum copy_kernel {
+  LDR_Z            = 0,
+  LD1W_Z_1         = 1,
+  LD1W_Z_2         = 2,
+  LD1W_Z_4         = 3,
+  LD1W_Z_STRIDED_2 = 4,
+  LD1W_Z_STRIDED_4 = 5,
+  LDR_ZA           = 6
+};
 
 void bench_micro( int        i_num_threads,
                   int        i_qos_class,
@@ -121,18 +133,54 @@ void bench_micro( int        i_num_threads,
   std::cout << "  GOPS:         " << l_gops     << std::endl;
 }
 
-void bench_copy( int64_t    i_num_vals,
-                 int64_t    i_offset_bytes,
-                 int64_t    i_num_reps,
-                 void    (* i_kernel)( int64_t,
-                                       int64_t,
-                                       float const *,
-                                       float       * ) ) {
+void bench_copy( int64_t     i_num_vals,
+                 int64_t     i_offset_bytes,
+                 int64_t     i_num_reps,
+                 copy_kernel i_kernel_type ) {
+  std::cout << "Running copy benchmark..." << std::endl;
+
   std::chrono::steady_clock::time_point l_start;
   std::chrono::steady_clock::time_point l_end;
   double l_duration = 0;
+  void (* l_kernel)( int64_t,
+                     int64_t,
+                     float const *,
+                     float       * ) = 0;
 
-  std::cout << "Running copy benchmark..." << std::endl;
+  std::string l_kernel_name = "";
+
+  if( i_kernel_type == copy_kernel::LDR_Z ) {
+    l_kernel_name = "LDR_Z";
+    l_kernel = copy_ldr_z;
+  }
+  else if( i_kernel_type == copy_kernel::LD1W_Z_1 ) {
+    l_kernel_name = "LD1W_Z_1";
+    l_kernel = copy_ld1w_z_1;
+  }
+  else if( i_kernel_type == copy_kernel::LD1W_Z_2 ) {
+    l_kernel_name = "LD1W_Z_2";
+    l_kernel = copy_ld1w_z_2;
+  }
+  else if( i_kernel_type == copy_kernel::LD1W_Z_4 ) {
+    l_kernel_name = "LD1W_Z_4";
+    l_kernel = copy_ld1w_z_4;
+  }
+  else if( i_kernel_type == copy_kernel::LD1W_Z_STRIDED_2 ) {
+    l_kernel_name = "LD1W_Z_STRIDED_2";
+    l_kernel = copy_ld1w_z_strided_2;
+  }
+  else if( i_kernel_type == copy_kernel::LD1W_Z_STRIDED_4 ) {
+    l_kernel_name = "LD1W_Z_STRIDED_4";
+    l_kernel = copy_ld1w_z_strided_4;
+  }
+  else if( i_kernel_type == copy_kernel::LDR_ZA ) {
+    l_kernel_name = "LDR_ZA";
+    l_kernel = copy_ldr_za;
+  }
+  else {
+    std::cerr << "Unknown kernel type: " << i_kernel_type << std::endl;
+    return;
+  }
 
   // allocate memory
   float * l_a = 0;
@@ -152,7 +200,7 @@ void bench_copy( int64_t    i_num_vals,
 
   // run copy benchmark
   l_start = std::chrono::steady_clock::now();
-  i_kernel( i_num_reps,
+  l_kernel( i_num_reps,
             i_num_vals,
             l_a,
             l_b );
@@ -174,13 +222,15 @@ void bench_copy( int64_t    i_num_vals,
   
   double l_mib_per_iter = i_num_vals * 4 / (1024.0*1024.0);
 
+  std::cout << "  Kernel:       " << l_kernel_name << std::endl;
   std::cout << "  #Values:      " << i_num_vals << std::endl;
   std::cout << "  Offset:       " << i_offset_bytes << std::endl;
   std::cout << "  Repetitions:  " << i_num_reps << std::endl;
   std::cout << "  MiB per iter: " << l_mib_per_iter << std::endl;
   std::cout << "  Duration (s): " << l_duration << std::endl;
   std::cout << "  GiB/s:        " << l_gibs << std::endl;
-  std::cout << "  CSV_DATA: " << i_num_vals     << ","
+  std::cout << "  CSV_DATA: " << l_kernel_name  << ","
+                              << i_num_vals     << ","
                               << i_offset_bytes << ","
                               << i_num_reps     << ","
                               << l_mib_per_iter << ","
@@ -497,9 +547,13 @@ void run_copy_benchmark( int i_kernel_type,
                          int i_align_bytes,
                          int i_qos_class ){
   std::cout << "Running copy benchmarks..." << std::endl;
-  std::cout << "  Kernel type: " << i_kernel_type << std::endl;
-  std::cout << "  Align bytes: " << i_align_bytes << std::endl;
-  std::cout << "  QoS class:   " << i_qos_class   << std::endl;
+  std::cout << "  Kernel type:            " << i_kernel_type << std::endl;
+  std::cout << "  Align bytes:            " << i_align_bytes << std::endl;
+  std::cout << "  QoS class:              " << i_qos_class   << std::endl;
+
+  std::size_t l_mem_avail = os_proc_available_memory();
+  double l_mem_avail_mib = l_mem_avail / (1024.0*1024.0);
+  std::cout << "  Available memory (MiB): " << l_mem_avail_mib << std::endl;
 
   qos_class_t l_qos_class = QOS_CLASS_DEFAULT;
 
@@ -517,96 +571,66 @@ void run_copy_benchmark( int i_kernel_type,
   }
   pthread_set_qos_class_self_np( l_qos_class, 0 );
 
-  void (* l_kernel)( int64_t,
-                     int64_t,
-                     float const *,
-                     float       * ) = 0;
-
-  if( i_kernel_type == 0 ) {
-    l_kernel = copy_ldr_z;
-  }
-  else if( i_kernel_type == 1 ) {
-    l_kernel = copy_ld1w_z_1;
-  }
-  else if( i_kernel_type == 2 ) {
-    l_kernel = copy_ld1w_z_2;
-  }
-  else if( i_kernel_type == 3 ) {
-    l_kernel = copy_ld1w_z_4;
-  }
-  else if( i_kernel_type == 4 ) {
-    l_kernel = copy_ld1w_z_strided_2;
-  }
-  else if( i_kernel_type == 5 ) {
-    l_kernel = copy_ld1w_z_strided_4;
-  }
-  else if( i_kernel_type == 6 ) {
-    l_kernel = copy_ldr_za;
-  }
-  else{
-    std::cerr << "Unknown kernel type: " << i_kernel_type << std::endl;
-    return;
-  }
-
   int64_t l_off = i_align_bytes % 128;
 
-  int64_t l_num_values[46] = {       256,    //   2 KiB
-                                     512,    //   4 KiB
-                                    1024,    //   8 KiB
-                                    2048,    //  16 KiB
-                                    4096,    //  32 KiB
+  int64_t l_num_values[47] = {       256,    //   2 KiB
+                                      512,    //   4 KiB
+                                     1024,    //   8 KiB
+                                     2048,    //  16 KiB
+                                     4096,    //  32 KiB
 
-                                    8192,    //  64 KiB
-                                   16384,    // 128 KiB
-                                   32768,    // 256 KiB
-                                   65536,    // 512 KiB
-                                  131072,    //   1 MiB
+                                     8192,    //  64 KiB
+                                    16384,    // 128 KiB
+                                    32768,    // 256 KiB
+                                    65536,    // 512 KiB
+                                   131072,    //   1 MiB
 
-                                  262144,    //   2 MiB
-                                  524288,    //   4 MiB
-                                  786432,    //   6 MiB
-                                  917504,    //   7 MiB
-                                 1048576,    //   8 MiB
+                                   262144,    //   2 MiB
+                                   524288,    //   4 MiB
+                                   786432,    //   6 MiB
+                                   917504,    //   7 MiB
+                                  1048576,    //   8 MiB
 
-                                 1179648,    //   9 MiB
-                                 1310720,    //  10 MiB
-                                 1441792,    //  11 MiB
-                                 1572864,    //  12 MiB
-                                 1703936,    //  13 MiB
+                                  1179648,    //   9 MiB
+                                  1310720,    //  10 MiB
+                                  1441792,    //  11 MiB
+                                  1572864,    //  12 MiB
+                                  1703936,    //  13 MiB
 
-                                 1835008,    //  14 MiB
-                                 1966080,    //  15 MiB
-                                 2097152,    //  16 MiB
-                                 2228224,    //  17 MiB
-                                 2359296,    //  18 MiB
+                                  1835008,    //  14 MiB
+                                  1966080,    //  15 MiB
+                                  2097152,    //  16 MiB
+                                  2228224,    //  17 MiB
+                                  2359296,    //  18 MiB
 
-                                 2490368,    //  19 MiB
-                                 2621440,    //  20 MiB
-                                 2752512,    //  21 MiB
-                                 2883584,    //  22 MiB
-                                 3014656,    //  23 MiB
+                                  2490368,    //  19 MiB
+                                  2621440,    //  20 MiB
+                                  2752512,    //  21 MiB
+                                  2883584,    //  22 MiB
+                                  3014656,    //  23 MiB
 
-                                 3145728,    //  24 MiB
-                                 3276800,    //  25 MiB
-                                 3407872,    //  26 MiB
-                                 3538944,    //  27 MiB
-                                 3670016,    //  28 MiB
+                                  3145728,    //  24 MiB
+                                  3276800,    //  25 MiB
+                                  3407872,    //  26 MiB
+                                  3538944,    //  27 MiB
+                                  3670016,    //  28 MiB
 
-                                 3801088,    //  29 MiB
-                                 3932160,    //  30 MiB
-                                 4063232,    //  31 MiB
-                                 4194304,    //  32 MiB
-                                 8388608,    //  64 MiB
+                                  3801088,    //  29 MiB
+                                  3932160,    //  30 MiB
+                                  4063232,    //  31 MiB
+                                  4194304,    //  32 MiB
+                                  8388608,    //  64 MiB
 
-                                 16777216,   // 128 MiB
-                                 33554432,   // 256 MiB
-                                 67108864,   // 512 MiB
-                                134217728,   //   1 GiB
-                                268435456,   //   2 GiB
+                                  16777216,   // 128 MiB
+                                  33554432,   // 256 MiB
+                                  67108864,   // 512 MiB
+                                 134217728,   //   1 GiB
+                                 268435456,   //   2 GiB
 
-                                536870912 }; //   4 GiB
+                                 536870912,   //   4 GiB
+                                1073741824 }; //   8 GiB
 
-  int64_t l_num_reps[46] = {  214683648,    //   2 KiB
+  int64_t l_num_reps[47] = {  214683648,    //   2 KiB
                               858734592,    //   4 KiB
                               429367296,    //   8 KiB
                               214683648,    //  16 KiB
@@ -660,15 +684,18 @@ void run_copy_benchmark( int i_kernel_type,
                                      512,   //   1 GiB
                                      256,   //   2 GiB
 
-                                     128 }; //   4 GiB
+                                     128,   //  4 GiB
+                                      64 }; //  8 GiB
 
-  for( int64_t l_be = 0; l_be < 46; l_be++ ) {
-    // sleep for 5 seconds to allow SoC to cool down
-    std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
+  for( int64_t l_be = 0; l_be < 47; l_be++ ) {
+    if( l_num_values[l_be]*8 < l_mem_avail ) {
+      // sleep for 30 seconds to allow SoC to cool down
+      std::this_thread::sleep_for( std::chrono::seconds( 30 ) );
 
-    bench_copy( l_num_values[l_be],
-                l_off,
-                l_num_reps[l_be],
-                l_kernel );
+      bench_copy( l_num_values[l_be],
+                  l_off,
+                  l_num_reps[l_be],
+                  (copy_kernel) i_kernel_type );
+    }
   }
 }
