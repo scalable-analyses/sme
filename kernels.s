@@ -52,6 +52,105 @@ _neon_bf16_support:
     bfmmla v0.4s, v1.8h, v2.8h
     ret
 
+    .align 4
+    .global _peak_neon_fmla_fp64_fp64_fp64
+_peak_neon_fmla_fp64_fp64_fp64:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+        
+    eor v0.16b, v0.16b, v0.16b
+    eor v1.16b, v1.16b, v1.16b
+    eor v2.16b, v2.16b, v2.16b
+    eor v3.16b, v3.16b, v3.16b
+
+    eor v4.16b, v4.16b, v4.16b
+    eor v5.16b, v5.16b, v5.16b
+    eor v6.16b, v6.16b, v6.16b
+    eor v7.16b, v7.16b, v7.16b
+
+    eor v8.16b, v8.16b, v8.16b
+    eor v9.16b, v9.16b, v9.16b
+    eor v10.16b, v10.16b, v10.16b
+    eor v11.16b, v11.16b, v11.16b
+
+    eor v12.16b, v12.16b, v12.16b
+    eor v13.16b, v13.16b, v13.16b
+    eor v14.16b, v14.16b, v14.16b
+    eor v15.16b, v15.16b, v15.16b
+
+    eor v16.16b, v16.16b, v16.16b
+    eor v17.16b, v17.16b, v17.16b
+    eor v18.16b, v18.16b, v18.16b
+    eor v19.16b, v19.16b, v19.16b
+
+    eor v20.16b, v20.16b, v20.16b
+    eor v21.16b, v21.16b, v21.16b
+    eor v22.16b, v22.16b, v22.16b
+    eor v23.16b, v23.16b, v23.16b
+
+    eor v24.16b, v24.16b, v24.16b
+    eor v25.16b, v25.16b, v25.16b
+    eor v26.16b, v26.16b, v26.16b
+    eor v27.16b, v27.16b, v27.16b
+
+    eor v28.16b, v28.16b, v28.16b
+    eor v29.16b, v29.16b, v29.16b
+    eor v30.16b, v30.16b, v30.16b
+    eor v31.16b, v31.16b, v31.16b
+
+loop_peak_neon_fmla_fp64_fp64_fp64:
+    sub x0,x0, #1
+    fmla v0.2d, v30.2d, v31.2d
+    fmla v1.2d, v30.2d, v31.2d
+    fmla v2.2d, v30.2d, v31.2d
+    fmla v3.2d, v30.2d, v31.2d
+
+    fmla v4.2d, v30.2d, v31.2d
+    fmla v5.2d, v30.2d, v31.2d
+    fmla v6.2d, v30.2d, v31.2d
+    fmla v7.2d, v30.2d, v31.2d
+
+    fmla v8.2d, v30.2d, v31.2d
+    fmla v9.2d, v30.2d, v31.2d
+    fmla v10.2d, v30.2d, v31.2d
+    fmla v11.2d, v30.2d, v31.2d
+    
+    fmla v12.2d, v30.2d, v31.2d
+    fmla v13.2d, v30.2d, v31.2d
+    fmla v14.2d, v30.2d, v31.2d
+    fmla v15.2d, v30.2d, v31.2d
+    
+    fmla v16.2d, v30.2d, v31.2d
+    fmla v17.2d, v30.2d, v31.2d
+    fmla v18.2d, v30.2d, v31.2d
+    fmla v19.2d, v30.2d, v31.2d
+
+    fmla v20.2d, v30.2d, v31.2d
+    fmla v21.2d, v30.2d, v31.2d
+    fmla v22.2d, v30.2d, v31.2d
+    fmla v23.2d, v30.2d, v31.2d
+
+    fmla v24.2d, v30.2d, v31.2d
+    fmla v25.2d, v30.2d, v31.2d
+    fmla v26.2d, v30.2d, v31.2d
+    fmla v27.2d, v30.2d, v31.2d
+
+    fmla v28.2d, v30.2d, v31.2d
+    fmla v29.2d, v30.2d, v31.2d
+    
+
+    cbnz x0, loop_peak_neon_fmla_fp64_fp64_fp64
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 30*4
+
+    ret
 
     .align 4
     .global _peak_neon_fmla_fp32_fp32_fp32
@@ -149,6 +248,105 @@ loop_peak_neon_fmla_fp32_fp32_fp32:
     ldp  d8,  d9, [sp], #16
 
     mov x0, 30*8
+
+    ret
+
+    .align 4
+    .global _peak_neon_fmla_fp16_fp16_fp16
+_peak_neon_fmla_fp16_fp16_fp16:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+        
+    eor v0.16b, v0.16b, v0.16b
+    eor v1.16b, v1.16b, v1.16b
+    eor v2.16b, v2.16b, v2.16b
+    eor v3.16b, v3.16b, v3.16b
+
+    eor v4.16b, v4.16b, v4.16b
+    eor v5.16b, v5.16b, v5.16b
+    eor v6.16b, v6.16b, v6.16b
+    eor v7.16b, v7.16b, v7.16b
+
+    eor v8.16b, v8.16b, v8.16b
+    eor v9.16b, v9.16b, v9.16b
+    eor v10.16b, v10.16b, v10.16b
+    eor v11.16b, v11.16b, v11.16b
+
+    eor v12.16b, v12.16b, v12.16b
+    eor v13.16b, v13.16b, v13.16b
+    eor v14.16b, v14.16b, v14.16b
+    eor v15.16b, v15.16b, v15.16b
+
+    eor v16.16b, v16.16b, v16.16b
+    eor v17.16b, v17.16b, v17.16b
+    eor v18.16b, v18.16b, v18.16b
+    eor v19.16b, v19.16b, v19.16b
+
+    eor v20.16b, v20.16b, v20.16b
+    eor v21.16b, v21.16b, v21.16b
+    eor v22.16b, v22.16b, v22.16b
+    eor v23.16b, v23.16b, v23.16b
+
+    eor v24.16b, v24.16b, v24.16b
+    eor v25.16b, v25.16b, v25.16b
+    eor v26.16b, v26.16b, v26.16b
+    eor v27.16b, v27.16b, v27.16b
+
+    eor v28.16b, v28.16b, v28.16b
+    eor v29.16b, v29.16b, v29.16b
+    eor v30.16b, v30.16b, v30.16b
+    eor v31.16b, v31.16b, v31.16b
+
+loop_peak_neon_fmla_fp16_fp16_fp16:
+    sub x0,x0, #1
+    fmla v0.8h, v30.8h, v31.8h
+    fmla v1.8h, v30.8h, v31.8h
+    fmla v2.8h, v30.8h, v31.8h
+    fmla v3.8h, v30.8h, v31.8h
+    
+    fmla v4.8h, v30.8h, v31.8h
+    fmla v5.8h, v30.8h, v31.8h
+    fmla v6.8h, v30.8h, v31.8h
+    fmla v7.8h, v30.8h, v31.8h
+
+    fmla v8.8h, v30.8h, v31.8h
+    fmla v9.8h, v30.8h, v31.8h
+    fmla v10.8h, v30.8h, v31.8h
+    fmla v11.8h, v30.8h, v31.8h
+
+    fmla v12.8h, v30.8h, v31.8h
+    fmla v13.8h, v30.8h, v31.8h
+    fmla v14.8h, v30.8h, v31.8h
+    fmla v15.8h, v30.8h, v31.8h
+
+    fmla v16.8h, v30.8h, v31.8h
+    fmla v17.8h, v30.8h, v31.8h
+    fmla v18.8h, v30.8h, v31.8h
+    fmla v19.8h, v30.8h, v31.8h
+
+    fmla v20.8h, v30.8h, v31.8h
+    fmla v21.8h, v30.8h, v31.8h
+    fmla v22.8h, v30.8h, v31.8h
+    fmla v23.8h, v30.8h, v31.8h
+
+    fmla v24.8h, v30.8h, v31.8h
+    fmla v25.8h, v30.8h, v31.8h
+    fmla v26.8h, v30.8h, v31.8h
+    fmla v27.8h, v30.8h, v31.8h
+    
+    fmla v28.8h, v30.8h, v31.8h
+    fmla v29.8h, v30.8h, v31.8h    
+
+    cbnz x0, loop_peak_neon_fmla_fp16_fp16_fp16
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 30*16
 
     ret
 
@@ -1701,5 +1899,316 @@ loop_peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8:
     ldp  d8,  d9, [sp], #16
 
     mov x0, 32*256
+
+    ret
+
+    .global _peak_sme_fmla_4_fp32_fp32_fp32
+    .align 4
+_peak_sme_fmla_4_fp32_fp32_fp32:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    // zero {za}
+
+    mov w8, #0
+    mov w9, #1
+    mov w10, #2
+    mov w11, #3
+
+loop_peak_sme_fmla_4_fp32_fp32_fp32:
+    sub x0, x0, #1
+
+    fmla za.s[w8, #0], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #0], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #0], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #0], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #1], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #1], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #1], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #1], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #2], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #2], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #2], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #2], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #3], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #3], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #3], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #3], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #4], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #4], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #4], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #4], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #5], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #5], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #5], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #5], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #6], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #6], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #6], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #6], {z0.s-z3.s}, z4.s
+
+    fmla za.s[w8, #7], {z0.s-z3.s}, z4.s
+    fmla za.s[w9, #7], {z0.s-z3.s}, z4.s
+    fmla za.s[w10, #7], {z0.s-z3.s}, z4.s
+    fmla za.s[w11, #7], {z0.s-z3.s}, z4.s
+        
+    cbnz x0, loop_peak_sme_fmla_4_fp32_fp32_fp32
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*128
+
+    ret
+
+    .global _peak_sme_fmla_4_bf16_bf16_fp32
+    .align 4
+_peak_sme_fmla_4_bf16_bf16_fp32:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    // zero {za}
+
+    mov w8, #0
+    mov w9, #1
+    mov w10, #2
+    mov w11, #3
+    
+loop_peak_sme_fmla_4_bf16_bf16_fp32:
+    sub x0, x0, #1
+
+    bfdot za.s[w8, #0],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #0],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #0],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #0],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #1],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #1],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #1],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #1],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #2],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #2],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #2],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #2],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #3],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #3],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #3],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #3],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #4],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #4],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #4],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #4],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #5],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #5],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #5],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #5],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #6],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #6],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #6],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #6],{z0.h-z3.h}, z4.h
+
+    bfdot za.s[w8, #7],{z0.h-z3.h}, z4.h
+    bfdot za.s[w9, #7],{z0.h-z3.h}, z4.h
+    bfdot za.s[w10, #7],{z0.h-z3.h}, z4.h
+    bfdot za.s[w11, #7],{z0.h-z3.h}, z4.h
+
+    cbnz x0, loop_peak_sme_fmla_4_bf16_bf16_fp32
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*256
+
+    ret
+
+    .global _peak_sve_fmla_streaming_fp64_fp64_fp64
+    .align 4
+_peak_sve_fmla_streaming_fp64_fp64_fp64:
+      stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    eor z0.b, z0.b, z0.b
+    eor z1.b, z1.b, z1.b
+    eor z2.b, z2.b, z2.b
+    eor z3.b, z3.b, z3.b
+    eor z4.b, z4.b, z4.b
+    eor z5.b, z5.b, z5.b
+    eor z6.b, z6.b, z6.b
+    eor z7.b, z7.b, z7.b
+    eor z8.b, z8.b, z8.b
+    eor z9.b, z9.b, z9.b
+    eor z10.b, z10.b, z10.b
+    eor z11.b, z11.b, z11.b
+    eor z12.b, z12.b, z12.b
+    eor z13.b, z13.b, z13.b
+    eor z14.b, z14.b, z14.b
+    eor z15.b, z15.b, z15.b
+    eor z16.b, z16.b, z16.b
+    eor z17.b, z17.b, z17.b
+    eor z18.b, z18.b, z18.b
+    eor z19.b, z19.b, z19.b
+    eor z20.b, z20.b, z20.b
+    eor z21.b, z21.b, z21.b
+    eor z22.b, z22.b, z22.b
+    eor z23.b, z23.b, z23.b
+    eor z24.b, z24.b, z24.b
+    eor z25.b, z25.b, z25.b
+    eor z26.b, z26.b, z26.b
+    eor z27.b, z27.b, z27.b
+    eor z28.b, z28.b, z28.b
+    eor z29.b, z29.b, z29.b
+    eor z30.b, z30.b, z30.b
+    eor z31.b, z31.b, z31.b
+
+    ptrue p0.b
+loop_peak_sve_fmla_streaming_fp64_fp64_fp64:
+    sub x0, x0, #1
+    fmla z0.d, p0/m, z30.d, z31.d
+    fmla z1.d, p0/m, z30.d, z31.d
+    fmla z2.d, p0/m, z30.d, z31.d
+    fmla z3.d, p0/m, z30.d, z31.d
+
+    fmla z4.d, p0/m, z30.d, z31.d
+    fmla z5.d, p0/m, z30.d, z31.d
+    fmla z6.d, p0/m, z30.d, z31.d
+    fmla z7.d, p0/m, z30.d, z31.d
+
+    fmla z8.d, p0/m, z30.d, z31.d
+    fmla z9.d, p0/m, z30.d, z31.d
+    fmla z10.d, p0/m, z30.d, z31.d
+    fmla z11.d, p0/m, z30.d, z31.d
+
+    fmla z12.d, p0/m, z30.d, z31.d
+    fmla z13.d, p0/m, z30.d, z31.d
+    fmla z14.d, p0/m, z30.d, z31.d
+    fmla z15.d, p0/m, z30.d, z31.d
+
+    fmla z16.d, p0/m, z30.d, z31.d
+    fmla z17.d, p0/m, z30.d, z31.d
+    fmla z18.d, p0/m, z30.d, z31.d
+    fmla z19.d, p0/m, z30.d, z31.d
+
+    fmla z20.d, p0/m, z30.d, z31.d
+    fmla z21.d, p0/m, z30.d, z31.d
+    fmla z22.d, p0/m, z30.d, z31.d
+    fmla z23.d, p0/m, z30.d, z31.d
+
+    fmla z24.d, p0/m, z30.d, z31.d
+    fmla z25.d, p0/m, z30.d, z31.d
+    fmla z26.d, p0/m, z30.d, z31.d
+    fmla z27.d, p0/m, z30.d, z31.d
+
+    fmla z28.d, p0/m, z30.d, z31.d
+    fmla z29.d, p0/m, z30.d, z31.d
+
+    cbnz x0, loop_peak_sve_fmla_streaming_fp64_fp64_fp64
+
+    smstop
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 30*16
+
+    ret
+
+    .global _peak_sme_fmla_4_fp64_fp64_fp64
+    .align 4
+_peak_sme_fmla_4_fp64_fp64_fp64:
+    stp  d8,  d9, [sp, #-16]!
+    stp d10, d11, [sp, #-16]!
+    stp d12, d13, [sp, #-16]!
+    stp d14, d15, [sp, #-16]!
+
+    smstart
+    // zero {za}
+
+    mov w8, #0
+    mov w9, #1
+    mov w10, #2
+    mov w11, #3
+
+loop_peak_sme_fmla_4_fp64_fp64_fp64:
+    sub x0, x0, #1
+
+    fmla za.d[w8, #0], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #0], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #0], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #0], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #1], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #1], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #1], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #1], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #2], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #2], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #2], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #2], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #3], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #3], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #3], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #3], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #4], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #4], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #4], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #4], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #5], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #5], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #5], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #5], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #6], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #6], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #6], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #6], {z0.d-z3.d}, z4.d
+
+    fmla za.d[w8, #7], {z0.d-z3.d}, z4.d
+    fmla za.d[w9, #7], {z0.d-z3.d}, z4.d
+    fmla za.d[w10, #7], {z0.d-z3.d}, z4.d
+    fmla za.d[w11, #7], {z0.d-z3.d}, z4.d
+        
+    cbnz x0, loop_peak_sme_fmla_4_fp64_fp64_fp64
+
+    smstop
+
+    ldp d14, d15, [sp], #16
+    ldp d12, d13, [sp], #16
+    ldp d10, d11, [sp], #16
+    ldp  d8,  d9, [sp], #16
+
+    mov x0, 32*64
 
     ret

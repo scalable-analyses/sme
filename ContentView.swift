@@ -3,13 +3,13 @@ import SwiftUI
 enum BenchType {
   case micro
   case cblas
-  case copy
+  case bandwidth
   case check
   case gemm
   case showcase
 }
 
-enum CopyKernel: Int32 {
+enum BandwidthKernel: Int32 {
   case ldr_z            = 0
   case ld1w_z_1         = 1
   case ld1w_z_2         = 2
@@ -17,6 +17,13 @@ enum CopyKernel: Int32 {
   case ld1w_z_strided_2 = 4
   case ld1w_z_strided_4 = 5
   case ldr_za           = 6
+  case str_z            = 7
+  case st1w_z_1         = 8
+  case st1w_z_2         = 9
+  case st1w_z_4         = 10
+  case st1w_z_strided_2 = 11
+  case st1w_z_strided_4 = 12
+  case str_za           = 13
 }
 
 enum QoS: Int32 {
@@ -45,7 +52,7 @@ enum ShowcaseType {
 struct ContentView: View {
   @State private var is_loading = false
   @State private var bench_type = BenchType.micro
-  @State private var copy_kernel = [CopyKernel.ldr_z]
+  @State private var bandwidth_kernel = [BandwidthKernel.ldr_z]
   @State private var align_bytes = [128]
   @State private var num_threads = 1
   @State private var qos = QoS.user_interactive
@@ -64,17 +71,17 @@ struct ContentView: View {
 
       List {
         Picker("Benchmark Type", selection: $bench_type) {
-          Text("Micro").tag(    BenchType.micro     )
-          Text("CBLAS").tag(    BenchType.cblas     )
-          Text("Copy").tag(     BenchType.copy      )
-          Text("Check").tag(    BenchType.check     )
-          Text("GEMM").tag(     BenchType.gemm      )
-          Text("Showcase").tag( BenchType.showcase  )
+          Text("Micro").tag(       BenchType.micro     )
+          Text("CBLAS").tag(       BenchType.cblas     )
+          Text("Bandwidth").tag(   BenchType.bandwidth )
+          Text("Check").tag(       BenchType.check     )
+          Text("GEMM").tag(        BenchType.gemm      )
+          Text("Showcase").tag(    BenchType.showcase  )
         }
 
         if( bench_type == BenchType.micro || bench_type == BenchType.gemm ) {
           Picker("Number of Threads", selection: $num_threads) {
-            ForEach(1..<7) {
+            ForEach(1..<21) {
               Text("\($0)").tag($0)
             }
           }
@@ -87,22 +94,29 @@ struct ContentView: View {
           }
         }
 
-        if( bench_type == BenchType.copy ) {
+        if( bench_type == BenchType.bandwidth ) {
           VStack {
-            ForEach([CopyKernel.ldr_z,
-                     CopyKernel.ld1w_z_1,
-                     CopyKernel.ld1w_z_2,
-                     CopyKernel.ld1w_z_4,
-                     CopyKernel.ld1w_z_strided_2,
-                     CopyKernel.ld1w_z_strided_4,
-                     CopyKernel.ldr_za], id: \.self) { kernel in
+            ForEach([BandwidthKernel.ldr_z,
+                     BandwidthKernel.ld1w_z_1,
+                     BandwidthKernel.ld1w_z_2,
+                     BandwidthKernel.ld1w_z_4,
+                     BandwidthKernel.ld1w_z_strided_2,
+                     BandwidthKernel.ld1w_z_strided_4,
+                     BandwidthKernel.ldr_za,
+                     BandwidthKernel.str_z,
+                     BandwidthKernel.st1w_z_1,
+                     BandwidthKernel.st1w_z_2,
+                     BandwidthKernel.st1w_z_4,
+                     BandwidthKernel.st1w_z_strided_2,
+                     BandwidthKernel.st1w_z_strided_4,
+                     BandwidthKernel.str_za], id: \.self) { kernel in
               Toggle("\(kernel)", isOn: Binding(
-                get: { copy_kernel.contains(kernel) },
+                get: { bandwidth_kernel.contains(kernel) },
                 set: { isOn in
                   if isOn {
-                    copy_kernel.append(kernel)
+                    bandwidth_kernel.append(kernel)
                   } else {
-                    copy_kernel.removeAll(where: { $0 == kernel })
+                    bandwidth_kernel.removeAll(where: { $0 == kernel })
                   }
                 }
               ))
@@ -161,12 +175,12 @@ struct ContentView: View {
           else if( bench_type == BenchType.cblas ) {
             run_cblas_benchmark()
           }
-          else if( bench_type == BenchType.copy ) {
+          else if( bench_type == BenchType.bandwidth ) {
             for al in align_bytes {
-              for kernel in copy_kernel {
-                run_copy_benchmark( Int32(kernel.rawValue),
-                                    Int32(al),
-                                    qos.rawValue )
+              for kernel in bandwidth_kernel {
+                run_bandwidth_benchmark( Int32(kernel.rawValue),
+                                         Int32(al),
+                                         qos.rawValue )
               }
             }
           }

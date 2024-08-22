@@ -13,8 +13,11 @@
 
 extern "C" {
   int peak_neon_fmla_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_neon_fmla_fp64_fp64_fp64( int64_t i_num_reps );
+  int peak_neon_fmla_fp16_fp16_fp16( int64_t i_num_reps );
   int peak_neon_bfmmla_bf16_bf16_fp32( int64_t i_num_reps );
   int peak_sve_fmla_streaming_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sve_fmla_streaming_fp64_fp64_fp64( int64_t i_num_reps );
   int peak_sme_fmopa_1_fp32_fp32_fp32( int64_t i_num_reps );
   int peak_sme_fmopa_2_fp32_fp32_fp32( int64_t i_num_reps );
   int peak_sme_fmopa_4_fp32_fp32_fp32( int64_t i_num_reps );
@@ -34,44 +37,71 @@ extern "C" {
   int peak_sme_smopa_i8_i8_i32( int64_t i_num_reps );
   int peak_sme_smopa_i16_i16_i32( int64_t i_num_reps );
   int peak_amx_fma_fp32_fp32_fp32( int64_t i_num_reps );
-  void copy_ldr_z( int64_t          i_num_reps,
-                   int64_t          i_num_vals,
-                   float    const * i_a,
-                   float          * o_b );
-  void copy_ld1w_z_1( int64_t          i_num_reps,
-                      int64_t          i_num_vals,
-                      float    const * i_a,
-                      float          * o_b );
-  void copy_ld1w_z_2( int64_t          i_num_reps,
-                      int64_t          i_num_vals,
-                      float    const * i_a,
-                      float          * o_b );
-  void copy_ld1w_z_4( int64_t          i_num_reps,
-                      int64_t          i_num_vals,
-                      float    const * i_a,
-                      float          * o_b );
-  void copy_ld1w_z_strided_2( int64_t          i_num_reps,
-                              int64_t          i_num_vals,
-                              float    const * i_a,
-                              float          * o_b );
-  void copy_ld1w_z_strided_4( int64_t          i_num_reps,
-                              int64_t          i_num_vals,
-                              float    const * i_a,
-                              float          * o_b );
-  void copy_ldr_za( int64_t          i_num_reps,
-                    int64_t          i_num_vals,
-                    float    const * i_a,
-                    float          * o_b );
+  int peak_sme_fmla_4_fp32_fp32_fp32( int64_t i_num_reps );
+  int peak_sme_fmla_4_bf16_bf16_fp32( int64_t i_num_reps );
+  int peak_sme_fmla_4_fp64_fp64_fp64( int64_t i_num_reps );
+
+
+  void load_data_sme_ldr_za( int64_t  i_num_reps,
+                             int64_t  i_num_vals,
+                             float  * i_a  );
+  void load_data_sme_ldr( int64_t  i_num_reps,
+                          int64_t  i_num_vals,
+                          float  * i_a  );
+  void load_data_sme_1_z( int64_t  i_num_reps,
+                          int64_t  i_num_vals,
+                          float  * i_a  );
+  void load_data_sme_2_z( int64_t  i_num_reps,
+                          int64_t  i_num_vals,
+                          float  * i_a  );
+  void load_data_sme_4_z( int64_t  i_num_reps,
+                          int64_t  i_num_vals,
+                          float  * i_a  );
+  void load_data_sme_2_z_strided( int64_t  i_num_reps,
+                                  int64_t  i_num_vals,
+                                  float  * i_a  );
+  void load_data_sme_4_z_strided( int64_t    i_num_reps,
+                                  int64_t    i_num_vals,
+                                  float    * i_a  );
+
+  void store_data_sme_str_za( int64_t  i_num_reps,
+                              int64_t  i_num_vals,
+                              float  * o_b  );
+  void store_data_sme_str( int64_t  i_num_reps,
+                           int64_t  i_num_vals,
+                           float  * o_b  );
+  void store_data_sme_1_z( int64_t  i_num_reps,
+                           int64_t  i_num_vals,
+                           float  * o_b  );
+  void store_data_sme_2_z( int64_t  i_num_reps,
+                           int64_t  i_num_vals,
+                           float  * o_b  );
+  void store_data_sme_4_z( int64_t  i_num_reps,
+                           int64_t  i_num_vals,
+                           float  * o_b  );
+  void store_data_sme_2_z_strided( int64_t  i_num_reps,
+                                   int64_t  i_num_vals,
+                                   float  * o_b  );
+  void store_data_sme_4_z_strided( int64_t  i_num_reps,
+                                   int64_t  i_num_vals,
+                                   float  * o_b  );
 }
 
-enum copy_kernel {
+enum bandwidth_kernel {
   LDR_Z            = 0,
   LD1W_Z_1         = 1,
   LD1W_Z_2         = 2,
   LD1W_Z_4         = 3,
   LD1W_Z_STRIDED_2 = 4,
   LD1W_Z_STRIDED_4 = 5,
-  LDR_ZA           = 6
+  LDR_ZA           = 6,
+  STR_Z            = 7,
+  ST1W_Z_1         = 8,
+  ST1W_Z_2         = 9,
+  ST1W_Z_4         = 10,
+  ST1W_Z_STRIDED_2 = 11,
+  ST1W_Z_STRIDED_4 = 12,
+  STR_ZA           = 13
 };
 
 void bench_micro( int        i_num_threads,
@@ -133,49 +163,77 @@ void bench_micro( int        i_num_threads,
   std::cout << "  GOPS:         " << l_gops     << std::endl;
 }
 
-void bench_copy( int64_t     i_num_vals,
-                 int64_t     i_offset_bytes,
-                 int64_t     i_num_reps,
-                 copy_kernel i_kernel_type ) {
-  std::cout << "Running copy benchmark..." << std::endl;
+void bench_bandwidth( int64_t     i_num_vals,
+                      int64_t     i_offset_bytes,
+                      int64_t     i_num_reps,
+                      bandwidth_kernel i_kernel_type ) {
+  std::cout << "Running bandwidth benchmark..." << std::endl;
 
   std::chrono::steady_clock::time_point l_start;
   std::chrono::steady_clock::time_point l_end;
   double l_duration = 0;
   void (* l_kernel)( int64_t,
                      int64_t,
-                     float const *,
-                     float       * ) = 0;
+                     float  * ) = 0;
 
   std::string l_kernel_name = "";
-
-  if( i_kernel_type == copy_kernel::LDR_Z ) {
+  // load instructions
+  if( i_kernel_type == bandwidth_kernel::LDR_Z ) {
     l_kernel_name = "LDR_Z";
-    l_kernel = copy_ldr_z;
+    l_kernel = load_data_sme_ldr;
   }
-  else if( i_kernel_type == copy_kernel::LD1W_Z_1 ) {
+  else if( i_kernel_type == bandwidth_kernel::LD1W_Z_1 ) {
     l_kernel_name = "LD1W_Z_1";
-    l_kernel = copy_ld1w_z_1;
+    l_kernel = load_data_sme_1_z;
   }
-  else if( i_kernel_type == copy_kernel::LD1W_Z_2 ) {
+  else if( i_kernel_type == bandwidth_kernel::LD1W_Z_2 ) {
     l_kernel_name = "LD1W_Z_2";
-    l_kernel = copy_ld1w_z_2;
+    l_kernel = load_data_sme_2_z;
   }
-  else if( i_kernel_type == copy_kernel::LD1W_Z_4 ) {
+  else if( i_kernel_type == bandwidth_kernel::LD1W_Z_4 ) {
     l_kernel_name = "LD1W_Z_4";
-    l_kernel = copy_ld1w_z_4;
+    l_kernel = load_data_sme_4_z;
   }
-  else if( i_kernel_type == copy_kernel::LD1W_Z_STRIDED_2 ) {
+  else if( i_kernel_type == bandwidth_kernel::LD1W_Z_STRIDED_2 ) {
     l_kernel_name = "LD1W_Z_STRIDED_2";
-    l_kernel = copy_ld1w_z_strided_2;
+    l_kernel = load_data_sme_2_z_strided;
   }
-  else if( i_kernel_type == copy_kernel::LD1W_Z_STRIDED_4 ) {
+  else if( i_kernel_type == bandwidth_kernel::LD1W_Z_STRIDED_4 ) {
     l_kernel_name = "LD1W_Z_STRIDED_4";
-    l_kernel = copy_ld1w_z_strided_4;
+    l_kernel = load_data_sme_4_z_strided;
   }
-  else if( i_kernel_type == copy_kernel::LDR_ZA ) {
+  else if( i_kernel_type == bandwidth_kernel::LDR_ZA ) {
     l_kernel_name = "LDR_ZA";
-    l_kernel = copy_ldr_za;
+    l_kernel = load_data_sme_ldr_za;
+  }
+  // store instructions
+  else if( i_kernel_type == bandwidth_kernel::STR_Z ) {
+    l_kernel_name = "STR_Z";
+    l_kernel = store_data_sme_str;
+  }
+  else if( i_kernel_type == bandwidth_kernel::ST1W_Z_1 ) {
+    l_kernel_name = "ST1W_Z_1";
+    l_kernel = store_data_sme_1_z;
+  }
+  else if( i_kernel_type == bandwidth_kernel::ST1W_Z_2 ) {
+    l_kernel_name = "ST1W_Z_2";
+    l_kernel = store_data_sme_2_z;
+  }
+  else if( i_kernel_type == bandwidth_kernel::ST1W_Z_4 ) {
+    l_kernel_name = "ST1W_Z_4";
+    l_kernel = store_data_sme_4_z;
+  }
+  else if( i_kernel_type == bandwidth_kernel::ST1W_Z_STRIDED_2 ) {
+    l_kernel_name = "ST1W_Z_STRIDED_2";
+    l_kernel = store_data_sme_2_z_strided;
+  }
+  else if( i_kernel_type == bandwidth_kernel::ST1W_Z_STRIDED_4 ) {
+    l_kernel_name = "ST1W_Z_STRIDED_4";
+    l_kernel = store_data_sme_4_z_strided;
+  }
+  else if( i_kernel_type == bandwidth_kernel::STR_ZA ) {
+    l_kernel_name = "STR_ZA";
+    l_kernel = store_data_sme_str_za;
   }
   else {
     std::cerr << "Unknown kernel type: " << i_kernel_type << std::endl;
@@ -198,25 +256,16 @@ void bench_copy( int64_t     i_num_vals,
     l_b[l_en] = 0;
   }
 
-  // run copy benchmark
+  // run bandwidth benchmark
   l_start = std::chrono::steady_clock::now();
   l_kernel( i_num_reps,
             i_num_vals,
-            l_a,
-            l_b );
+            l_a );
   l_end = std::chrono::steady_clock::now();
   l_duration = std::chrono::duration_cast< std::chrono::duration<double> >( l_end - l_start ).count();
 
-  // check results
-  for( int64_t l_en = 0; l_en < i_num_vals; l_en++ ) {
-    if( l_b[l_en] != 7743 ){
-      std::cerr << "  Error at position " << l_en << ": " << l_b[l_en] << std::endl;
-      break;
-    }
-  }
-
   // print results
-  double l_num_bytes = 2 * i_num_reps * i_num_vals * 4;
+  double l_num_bytes = i_num_reps * i_num_vals * 4;
   double l_gibs = l_num_bytes / (1024.0*1024.0*1024.0);
          l_gibs /= l_duration;
   
@@ -382,16 +431,28 @@ void run_micro_benchmark( int i_num_threads,
     std::cout << "  QoS: Default" << std::endl;
   }
 
+  std::cout << "Determining FP64 Neon FMLA performance..." << std::endl;
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 1000000000 : 200000000,
+               peak_neon_fmla_fp64_fp64_fp64 );
+
   std::cout << "Determining FP32 Neon FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 1000000000 : 200000000,
                peak_neon_fmla_fp32_fp32_fp32 );
 
+  std::cout << "Determining FP16 Neon FMLA performance..." << std::endl;
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 2000000000 : 400000000,
+               peak_neon_fmla_fp16_fp16_fp16 );
+
   std::cout << "Determining BF16-BF16-FP32 BFMMLA Neon performance" << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 1000000000 : 200000000,
+               (i_qos_class < 4) ? 200000000 : 40000000,
                peak_neon_bfmmla_bf16_bf16_fp32 );
 
   std::cout << "Determining FP32 SSVE FMLA (Z accumulation) performance..." << std::endl;
@@ -400,107 +461,131 @@ void run_micro_benchmark( int i_num_threads,
                (i_qos_class < 4) ? 100000000 : 20000000,
                peak_sve_fmla_streaming_fp32_fp32_fp32 );
 
-  std::cout << "Determining FP32 AMX performance..." << std::endl;
+  std::cout << "Detemining FP64 SSVE FMLA (Z accumulation) performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
                (i_qos_class < 4) ? 100000000 : 20000000,
+                peak_sve_fmla_streaming_fp64_fp64_fp64);
+
+  std::cout << "Determining FP32 AMX performance..." << std::endl;
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 100000000 : 2000000,
                peak_amx_fma_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME FMOPA performance (1 tile)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_1_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME FMOPA performance (2 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_2_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_4_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME predicated (8/16) FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8 );
 
   std::cout << "Determining FP32 SME predicated (15/16) FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15 );
 
   std::cout << "Determining FP32 SME FMOPA performance (4 tiles, reordering)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_4_reorder_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (8 instructions per block).." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 15000000,
                peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (16 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 15000000,
                peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (32 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 15000000,
                peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (64 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 500000,
                peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (128 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32 );
 
   std::cout << "Determining FP16-FP16-FP32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_fp16_fp16_fp32 );
 
   std::cout << "Determining BF16-BF16-FP32 SME BFMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_bfmopa_bf16_bf16_fp32 );
 
   std::cout << "Determining FP64 SME FMOPA performance ..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_fmopa_fp64_fp64_fp64 );
 
-  std::cout << "Determining I8-I8-I32 SME FMOPA performance..." << std::endl;
+  std::cout << "Determining I8-I8-I32 SME SMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 5000000,
                peak_sme_smopa_i8_i8_i32 );
 
   std::cout << "Determining I16-I16-I32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 50000000,
+               (i_qos_class < 4) ? 25000000 : 50000000,
                peak_sme_smopa_i16_i16_i32 );
+
+  std::cout << "Determining FP32 SME FMLA performance..." << std::endl;
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 25000000 : 20000000,
+               peak_sme_fmla_4_fp32_fp32_fp32 );
+
+  std::cout << "Determining FP64 SME FMLA performance..." << std::endl;
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 250000000 : 200000000,
+               peak_sme_fmla_4_fp64_fp64_fp64 );
+
+  std::cout << "Determining BF16-BF16-FP32 SME BFDOT performance..." << std::endl;
+  bench_micro( i_num_threads,
+               i_qos_class,
+               (i_qos_class < 4) ? 10000000 : 20000000,
+               peak_sme_fmla_4_bf16_bf16_fp32 );
 }
 
 /*
@@ -541,12 +626,12 @@ void run_cblas_benchmark(){
 }
 
 /*
- * Run copy benchmarks
+ * Run bandwidth benchmarks
  */
-void run_copy_benchmark( int i_kernel_type,
+void run_bandwidth_benchmark( int i_kernel_type,
                          int i_align_bytes,
                          int i_qos_class ){
-  std::cout << "Running copy benchmarks..." << std::endl;
+  std::cout << "Running bandwidth benchmarks..." << std::endl;
   std::cout << "  Kernel type:            " << i_kernel_type << std::endl;
   std::cout << "  Align bytes:            " << i_align_bytes << std::endl;
   std::cout << "  QoS class:              " << i_qos_class   << std::endl;
@@ -573,129 +658,129 @@ void run_copy_benchmark( int i_kernel_type,
 
   int64_t l_off = i_align_bytes % 128;
 
-  int64_t l_num_values[47] = {       256,    //   2 KiB
-                                      512,    //   4 KiB
-                                     1024,    //   8 KiB
-                                     2048,    //  16 KiB
-                                     4096,    //  32 KiB
+    int64_t l_num_values[47] = {          256,    //   2 KiB
+                                          512,    //   4 KiB
+                                         1024,    //   8 KiB
+                                         2048,    //  16 KiB
+                                         4096,    //  32 KiB
 
-                                     8192,    //  64 KiB
-                                    16384,    // 128 KiB
-                                    32768,    // 256 KiB
-                                    65536,    // 512 KiB
-                                   131072,    //   1 MiB
+                                         8192,    //  64 KiB
+                                        16384,    // 128 KiB
+                                        32768,    // 256 KiB
+                                        65536,    // 512 KiB
+                                       131072,    //   1 MiB
 
-                                   262144,    //   2 MiB
-                                   524288,    //   4 MiB
-                                   786432,    //   6 MiB
-                                   917504,    //   7 MiB
-                                  1048576,    //   8 MiB
+                                       262144,    //   2 MiB
+                                       524288,    //   4 MiB
+                                       786432,    //   6 MiB
+                                       917504,    //   7 MiB
+                                      1048576,    //   8 MiB
 
-                                  1179648,    //   9 MiB
-                                  1310720,    //  10 MiB
-                                  1441792,    //  11 MiB
-                                  1572864,    //  12 MiB
-                                  1703936,    //  13 MiB
+                                      1179648,    //   9 MiB
+                                      1310720,    //  10 MiB
+                                      1441792,    //  11 MiB
+                                      1572864,    //  12 MiB
+                                      1703936,    //  13 MiB
 
-                                  1835008,    //  14 MiB
-                                  1966080,    //  15 MiB
-                                  2097152,    //  16 MiB
-                                  2228224,    //  17 MiB
-                                  2359296,    //  18 MiB
+                                      1835008,    //  14 MiB
+                                      1966080,    //  15 MiB
+                                      2097152,    //  16 MiB
+                                      2228224,    //  17 MiB
+                                      2359296,    //  18 MiB
 
-                                  2490368,    //  19 MiB
-                                  2621440,    //  20 MiB
-                                  2752512,    //  21 MiB
-                                  2883584,    //  22 MiB
-                                  3014656,    //  23 MiB
+                                      2490368,    //  19 MiB
+                                      2621440,    //  20 MiB
+                                      2752512,    //  21 MiB
+                                      2883584,    //  22 MiB
+                                      3014656,    //  23 MiB
 
-                                  3145728,    //  24 MiB
-                                  3276800,    //  25 MiB
-                                  3407872,    //  26 MiB
-                                  3538944,    //  27 MiB
-                                  3670016,    //  28 MiB
+                                      3145728,    //  24 MiB
+                                      3276800,    //  25 MiB
+                                      3407872,    //  26 MiB
+                                      3538944,    //  27 MiB
+                                      3670016,    //  28 MiB
 
-                                  3801088,    //  29 MiB
-                                  3932160,    //  30 MiB
-                                  4063232,    //  31 MiB
-                                  4194304,    //  32 MiB
-                                  8388608,    //  64 MiB
+                                      3801088,    //  29 MiB
+                                      3932160,    //  30 MiB
+                                      4063232,    //  31 MiB
+                                      4194304,    //  32 MiB
+                                      8388608,    //  64 MiB
 
-                                  16777216,   // 128 MiB
-                                  33554432,   // 256 MiB
-                                  67108864,   // 512 MiB
-                                 134217728,   //   1 GiB
-                                 268435456,   //   2 GiB
+                                      16777216,   // 128 MiB
+                                      33554432,   // 256 MiB
+                                      67108864,   // 512 MiB
+                                     134217728,   //   1 GiB
+                                     268435456,   //   2 GiB
 
-                                 536870912,   //   4 GiB
-                                1073741824 }; //   8 GiB
+                                     536870912,   //   4 GiB
+                                    1073741824 }; //   8 GiB
 
-  int64_t l_num_reps[47] = {  214683648,    //   2 KiB
-                              858734592,    //   4 KiB
-                              429367296,    //   8 KiB
-                              214683648,    //  16 KiB
-                              107341824,    //  32 KiB
+      int64_t l_num_reps[47] = {  994683648,    //   2 KiB
+                                  858734592,    //   4 KiB
+                                  429367296,    //   8 KiB
+                                  214683648,    //  16 KiB
+                                  107341824,    //  32 KiB
 
-                                53670912,   //  64 KiB
-                                26835456,   // 128 KiB
-                                13417728,   // 256 KiB
-                                 6708864,   // 512 KiB
-                                 3354432,   //   1 MiB
+                                    53670912,   //  64 KiB
+                                    26835456,   // 128 KiB
+                                    13417728,   // 256 KiB
+                                     6708864,   // 512 KiB
+                                     3354432,   //   1 MiB
 
-                                 1677216,   //   2 MiB
-                                  838608,   //   4 MiB
-                                  559072,   //   6 MiB
-                                  479536,   //   7 MiB
-                                  419768,   //   8 MiB
+                                     1677216,   //   2 MiB
+                                      838608,   //   4 MiB
+                                      559072,   //   6 MiB
+                                      479536,   //   7 MiB
+                                      419768,   //   8 MiB
 
-                                  383884,   //   9 MiB
-                                  335443,   //  10 MiB
-                                  305222,   //  11 MiB
-                                  279616,   //  12 MiB
-                                  255768,   //  13 MiB
+                                      383884,   //   9 MiB
+                                      335443,   //  10 MiB
+                                      305222,   //  11 MiB
+                                      279616,   //  12 MiB
+                                      255768,   //  13 MiB
 
-                                  235536,   //  14 MiB
-                                  218072,   //  15 MiB
-                                  202611,   //  16 MiB
-                                  188992,   //  17 MiB
-                                  176768,   //  18 MiB
+                                      235536,   //  14 MiB
+                                      218072,   //  15 MiB
+                                      202611,   //  16 MiB
+                                      188992,   //  17 MiB
+                                      176768,   //  18 MiB
 
-                                  165888,   //  19 MiB
-                                  156044,   //  20 MiB
-                                  147768,   //  21 MiB
-                                  140611,   //  22 MiB
-                                  134177,   //  23 MiB
+                                      165888,   //  19 MiB
+                                      156044,   //  20 MiB
+                                      147768,   //  21 MiB
+                                      140611,   //  22 MiB
+                                      134177,   //  23 MiB
 
-                                  128384,   //  24 MiB
-                                  123111,   //  25 MiB
-                                   59139,   //  26 MiB
-                                   56913,   //  27 MiB
-                                   54855,   //  28 MiB
+                                      128384,   //  24 MiB
+                                      123111,   //  25 MiB
+                                       59139,   //  26 MiB
+                                       56913,   //  27 MiB
+                                       54855,   //  28 MiB
 
-                                   52944,   //  29 MiB
-                                   51161,   //  30 MiB
-                                   49492,   //  31 MiB
-                                   32768,   //  32 MiB
-                                    8192,   //  64 MiB
+                                       52944,   //  29 MiB
+                                       51161,   //  30 MiB
+                                       49492,   //  31 MiB
+                                       32768,   //  32 MiB
+                                        8192,   //  64 MiB
 
-                                    4096,   // 128 MiB
-                                    2048,   // 256 MiB
-                                    1024,   // 512 MiB
-                                     512,   //   1 GiB
-                                     256,   //   2 GiB
+                                        4096,   // 128 MiB
+                                        2048,   // 256 MiB
+                                        1024,   // 512 MiB
+                                         512,   //   1 GiB
+                                         256,   //   2 GiB
 
-                                     128,   //  4 GiB
-                                      64 }; //  8 GiB
+                                         128,   //  4 GiB
+                                          64 }; //  8 GiB
 
-  for( int64_t l_be = 0; l_be < 47; l_be++ ) {
-    if( l_num_values[l_be]*8 < l_mem_avail ) {
-      // sleep for 30 seconds to allow SoC to cool down
-      std::this_thread::sleep_for( std::chrono::seconds( 30 ) );
+  for( int64_t l_be = 1; l_be < 47; l_be++ ) {
+    if( l_num_values[l_be]*4*2 < l_mem_avail ) {
+      // sleep for 10 seconds to allow SoC to cool down
+      std::this_thread::sleep_for( std::chrono::seconds( 10 )) ;
 
-      bench_copy( l_num_values[l_be],
-                  l_off,
-                  l_num_reps[l_be],
-                  (copy_kernel) i_kernel_type );
+      bench_bandwidth( l_num_values[l_be],
+                       l_off,
+                       l_num_reps[l_be]/2,
+                       (bandwidth_kernel) i_kernel_type );
     }
   }
 }
