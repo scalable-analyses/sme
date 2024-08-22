@@ -434,157 +434,157 @@ void run_micro_benchmark( int i_num_threads,
   std::cout << "Determining FP64 Neon FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 1000000000 : 200000000,
+               (i_qos_class < 3) ? 500000000 : 200000000,
                peak_neon_fmla_fp64_fp64_fp64 );
 
   std::cout << "Determining FP32 Neon FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 1000000000 : 200000000,
+               (i_qos_class < 3) ? 500000000 : 200000000,
                peak_neon_fmla_fp32_fp32_fp32 );
 
   std::cout << "Determining FP16 Neon FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 2000000000 : 400000000,
+               (i_qos_class < 3) ? 500000000 : 200000000,
                peak_neon_fmla_fp16_fp16_fp16 );
 
   std::cout << "Determining BF16-BF16-FP32 BFMMLA Neon performance" << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 200000000 : 40000000,
+               (i_qos_class < 3) ? 100000000 : 40000000,
                peak_neon_bfmmla_bf16_bf16_fp32 );
 
   std::cout << "Determining FP32 SSVE FMLA (Z accumulation) performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 100000000 : 20000000,
+               (i_qos_class < 3) ? 50000000 : 30000000,
                peak_sve_fmla_streaming_fp32_fp32_fp32 );
 
   std::cout << "Detemining FP64 SSVE FMLA (Z accumulation) performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 100000000 : 20000000,
+               (i_qos_class < 3) ? 50000000 : 30000000,
                 peak_sve_fmla_streaming_fp64_fp64_fp64);
 
   std::cout << "Determining FP32 AMX performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 100000000 : 2000000,
+               (i_qos_class < 3) ? 300000000 : 10000000,
                peak_amx_fma_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME FMOPA performance (1 tile)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 35000000 : 25000000,
                peak_sme_fmopa_1_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME FMOPA performance (2 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 75000000 : 25000000,
                peak_sme_fmopa_2_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 125000000 : 25000000,
                peak_sme_fmopa_4_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME predicated (8/16) FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 125000000 : 25000000,
                peak_sme_fmopa_4_fp32_fp32_fp32_predicated_8 );
 
   std::cout << "Determining FP32 SME predicated (15/16) FMOPA performance (4 tiles)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 125000000 : 25000000,
                peak_sme_fmopa_4_fp32_fp32_fp32_predicated_15 );
 
   std::cout << "Determining FP32 SME FMOPA performance (4 tiles, reordering)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 125000000 : 25000000,
                peak_sme_fmopa_4_reorder_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (8 instructions per block).." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 15000000,
+               (i_qos_class < 3) ? 125000000 : 60000000,
                peak_sme_fmopa_smstart_smstop_8_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (16 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 15000000,
+               (i_qos_class < 3) ? 125000000 : 60000000,
                peak_sme_fmopa_smstart_smstop_16_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (32 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 15000000,
+               (i_qos_class < 3) ? 125000000 : 60000000,
                peak_sme_fmopa_smstart_smstop_32_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (64 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 500000,
+               (i_qos_class < 3) ? 100000000 : 60000000,
                peak_sme_fmopa_smstart_smstop_64_fp32_fp32_fp32 );
 
   std::cout << "Determining FP32 SME SMSTART-SMSTOP performance (128 instructions per block)..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 50000000 : 60000000,
                peak_sme_fmopa_smstart_smstop_128_fp32_fp32_fp32 );
 
   std::cout << "Determining FP16-FP16-FP32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 75000000 : 15000000,
                peak_sme_fmopa_fp16_fp16_fp32 );
 
   std::cout << "Determining BF16-BF16-FP32 SME BFMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 75000000 : 15000000,
                peak_sme_bfmopa_bf16_bf16_fp32 );
 
   std::cout << "Determining FP64 SME FMOPA performance ..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 125000000 : 25000000,
                peak_sme_fmopa_fp64_fp64_fp64 );
 
   std::cout << "Determining I8-I8-I32 SME SMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 5000000,
+               (i_qos_class < 3) ? 75000000 : 15000000,
                peak_sme_smopa_i8_i8_i32 );
 
   std::cout << "Determining I16-I16-I32 SME FMOPA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 50000000,
+               (i_qos_class < 3) ? 75000000 : 15000000,
                peak_sme_smopa_i16_i16_i32 );
 
   std::cout << "Determining FP32 SME FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 25000000 : 20000000,
+               (i_qos_class < 3) ? 125000000 : 50000000,
                peak_sme_fmla_4_fp32_fp32_fp32 );
 
   std::cout << "Determining FP64 SME FMLA performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 250000000 : 200000000,
+               (i_qos_class < 3) ? 150000000 : 50000000,
                peak_sme_fmla_4_fp64_fp64_fp64 );
 
   std::cout << "Determining BF16-BF16-FP32 SME BFDOT performance..." << std::endl;
   bench_micro( i_num_threads,
                i_qos_class,
-               (i_qos_class < 4) ? 10000000 : 20000000,
+               (i_qos_class < 3) ? 100000000 : 25000000,
                peak_sme_fmla_4_bf16_bf16_fp32 );
 }
 
