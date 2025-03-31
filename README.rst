@@ -26,7 +26,7 @@ It's just a few terminal commands if you want to try out the code:
   # for other setting just run ./gemm_kernel
 
 The two examples in lines 8 and 9 execute GEMMs where all matrix sizes are set to 512.
-The first example in line 8 computes :math:`C \mathrel{+}= A \times B` and reaches about 1755 FP32 GFLOPS on M4:
+The first example in line 8 computes C = A x B and reaches about 1755 FP32 GFLOPS on M4:
 
 .. code-block:: none
   :linenos:
@@ -55,7 +55,7 @@ The first example in line 8 computes :math:`C \mathrel{+}= A \times B` and reach
 
   Total Max Error 0.000000
 
-The second example in line 9 computes :math:`C += A \times B^T` and reaches about 1833 GFLOPS on M4:
+The second example in line 9 computes C += A x B^T and reaches about 1833 GFLOPS on M4:
 
 .. code-block:: none
   :linenos:
